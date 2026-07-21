@@ -6,6 +6,7 @@ const routes = [
   { path: '/trend', name: 'TrendAnalysis', component: () => import('../views/TrendAnalysis.vue') },
   { path: '/zones', name: 'ClimateZones', component: () => import('../views/ClimateZones.vue') },
   { path: '/ai', name: 'BIAgent', component: () => import('../views/BIAgent.vue') },
+  { path: '/:pathMatch(.*)*', name: 'NotFound', redirect: '/' },
 ]
 
 export default createRouter({ history: createWebHistory(), routes })

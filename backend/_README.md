@@ -1,6 +1,7 @@
 # Backend - Flask API Server
 
-- `app.py` - 主入口
-- `api/` - RESTful 接口 (kpi, users, items, market_basket)
-- `nl2sql/` - NL2SQL 引擎 (Prompt + LLM + SQL 安全校验)
-- `db.py` - MySQL/Hive 连接管理
+- `app.py` — 主入口，注册蓝图、静态文件服务
+- `config.py` — 集中配置 (环境变量 + dotenv)
+- `db.py` — MySQL 连接管理 (pymysql)
+- `agent/` — AI分析助手 (意图识别/工具调用/响应生成)
+- `routes/` — RESTful API (health/kpi/monthly/zones/ranking/trend/agent)

@@ -7,7 +7,7 @@ from flask import Flask, send_from_directory
 from flask_cors import CORS
 from config import CORS_ORIGINS, API_PORT, FLASK_DEBUG
 
-app = Flask(__name__, static_folder="../frontend/dist", static_url_path="")
+app = Flask(__name__, static_folder="../frontend/dist", static_url_path="/static")
 CORS(app, origins=CORS_ORIGINS)
 
 # ── Blueprints ──
@@ -24,14 +24,11 @@ app.register_blueprint(ai_bp)
 app.register_blueprint(agent_bp)
 
 # ── SPA 静态文件 ──
-@app.route("/")
-def index():
-    return send_from_directory(app.static_folder, "index.html")
-
+@app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def spa(path):
     full = os.path.join(app.static_folder, path)
-    if os.path.exists(full) and not os.path.isdir(full):
+    if path and os.path.isfile(full):
         return send_from_directory(app.static_folder, path)
     return send_from_directory(app.static_folder, "index.html")
 

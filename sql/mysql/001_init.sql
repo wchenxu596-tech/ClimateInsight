@@ -1,12 +1,12 @@
--- ClimateInsight MySQL Schema v2 — 支持多年数据 + 完整天气字段
--- 使用: mysql -u root -p < sql/mysql/001_schema.sql
+-- ClimateInsight MySQL 初始化脚本（空库建表）
+-- 使用: mysql -u root -p < sql/mysql/001_init.sql
+-- 注意：本脚本仅在空库上执行；已有数据的库请使用增量升级脚本 002/003
 
 CREATE DATABASE IF NOT EXISTS climate_dw CHARACTER SET utf8mb4;
 USE climate_dw;
 
 -- DWS: 气象站月度汇总
-DROP TABLE IF EXISTS dws_station_monthly;
-CREATE TABLE dws_station_monthly (
+CREATE TABLE IF NOT EXISTS dws_station_monthly (
     station_id   VARCHAR(20) NOT NULL,
     station_name VARCHAR(200),
     year         INT NOT NULL DEFAULT 2024,
@@ -35,9 +35,8 @@ CREATE TABLE dws_station_monthly (
     INDEX idx_precip (year, total_precip)
 ) ENGINE=InnoDB;
 
--- ADS: KPI 看板
-DROP TABLE IF EXISTS ads_kpi;
-CREATE TABLE ads_kpi (
+-- ADS: KPI 看板（复合主键支持多年）
+CREATE TABLE IF NOT EXISTS ads_kpi (
     kpi_name  VARCHAR(50) NOT NULL,
     kpi_value DOUBLE,
     kpi_unit  VARCHAR(20),
@@ -47,8 +46,7 @@ CREATE TABLE ads_kpi (
 ) ENGINE=InnoDB;
 
 -- ADS: 城市排名
-DROP TABLE IF EXISTS ads_ranking;
-CREATE TABLE ads_ranking (
+CREATE TABLE IF NOT EXISTS ads_ranking (
     id           INT AUTO_INCREMENT PRIMARY KEY,
     category     VARCHAR(20) NOT NULL,
     rank_num     INT,
@@ -60,9 +58,8 @@ CREATE TABLE ads_ranking (
     INDEX idx_cat_year (category, data_year)
 ) ENGINE=InnoDB;
 
--- ADS: 月度趋势
-DROP TABLE IF EXISTS ads_monthly_trend;
-CREATE TABLE ads_monthly_trend (
+-- ADS: 月度趋势（复合主键支持多年）
+CREATE TABLE IF NOT EXISTS ads_monthly_trend (
     data_year INT NOT NULL DEFAULT 2024,
     obs_month INT NOT NULL,
     avg_temp  DOUBLE,
@@ -71,9 +68,8 @@ CREATE TABLE ads_monthly_trend (
     PRIMARY KEY (data_year, obs_month)
 ) ENGINE=InnoDB;
 
--- ADS: 气候带分布
-DROP TABLE IF EXISTS ads_zones;
-CREATE TABLE ads_zones (
+-- ADS: 气候带分布（复合主键支持多年）
+CREATE TABLE IF NOT EXISTS ads_zones (
     data_year     INT NOT NULL DEFAULT 2024,
     climate_zone  VARCHAR(20) NOT NULL,
     station_count INT,
