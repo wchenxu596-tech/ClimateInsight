@@ -39,7 +39,7 @@ def make_response(intent_info: dict, tool_result) -> dict:
     """根据意图和工具结果生成前端可用的回答"""
     intent = intent_info.get("intent", "unknown")
     year = intent_info.get("year", DATA_YEAR)
-    data = {"answer": "", "intent": intent, "limitations": [f"数据仅覆盖{year}年，不包含多年对比"]}
+    data = {"answer": "", "intent": intent}
 
     if intent == "kpi":
         data["answer"] = f"{year} 年全球气候核心指标如下："
@@ -92,6 +92,29 @@ def make_response(intent_info: dict, tool_result) -> dict:
             "y": [int(r["cnt"]) for r in tool_result],
             "name": "站点数"
         }
+
+    elif intent == "compare":
+        years = intent_info.get("years", [])
+        if not years or not tool_result:
+            data["answer"] = "暂无对比数据。"
+            return data
+
+        compare_type = intent_info.get("type", "kpi")
+        if compare_type == "kpi":
+            # 对比KPI：年均温
+            temps = {}
+            for y, rows in tool_result.items():
+                for r in rows:
+                    if r.get("kpi_name") == "global_avg_temp":
+                        temps[y] = r.get("kpi_value")
+            lines = [f"{y} 年全球年均温：{temps.get(y, '--')}°C" for y in years]
+            data["answer"] = "多年对比结果：\n" + "\n".join(lines)
+            data["chart"] = {
+                "type": "bar",
+                "x": [f"{y}年" for y in years],
+                "y": [float(temps.get(y, 0) or 0) for y in years],
+                "name": "年均温(°C)"
+            }
 
     elif intent == "chat":
         data["answer"] = (

@@ -2,38 +2,49 @@
 from agent.intents import detect
 from agent.tools import TOOLS
 from agent.responder import make_response
+from config import DATA_YEAR
 
-# 无需调用工具的意图（chat/help/unknown 直接返回模板）
 NO_TOOL_INTENTS = {"chat", "help", "unknown"}
 
 
-def query(question: str, year: int = 2024) -> dict:
-    """处理一次Agent查询，返回完整响应字典。
-    year 参数覆盖意图识别出的年份，确保数据一致性。"""
+def query(question: str, year: int = DATA_YEAR) -> dict:
+    """处理一次Agent查询。year参数仅在LLM未识别出年份时作为回退。"""
     intent_info = detect(question)
-    intent_info["year"] = year  # 优先使用请求参数
     intent = intent_info.get("intent", "unknown")
 
-    # 闲聊、帮助、未知 → 直接生成回复，不查数据库
+    # UI年份仅作为LLM未识别时的回退
+    if "year" not in intent_info or intent_info["year"] is None:
+        intent_info["year"] = year
+
     if intent in NO_TOOL_INTENTS:
         return make_response(intent_info, None)
 
-    # 调用工具
     try:
+        qyear = intent_info.get("year", year)
+
         if intent == "kpi":
-            result = TOOLS["get_kpi"](year)
+            result = TOOLS["get_kpi"](qyear)
         elif intent == "monthly":
-            result = TOOLS["get_monthly"](year)
+            result = TOOLS["get_monthly"](qyear)
         elif intent == "ranking":
             result = TOOLS["get_ranking"](
-                year,
+                qyear,
                 intent_info.get("category", "hottest"),
                 intent_info.get("limit", 10)
             )
         elif intent == "zones":
-            result = TOOLS["get_zones"](year)
+            result = TOOLS["get_zones"](qyear)
+        elif intent == "compare":
+            years = intent_info.get("years", [])
+            results = {}
+            for y in years:
+                if intent_info.get("type") == "kpi":
+                    results[y] = TOOLS["get_kpi"](y)
+                else:
+                    results[y] = TOOLS["get_monthly"](y)
+            return make_response(intent_info, results)
         else:
-            return make_response({"intent": "unknown", "year": year}, None)
+            return make_response({"intent": "unknown", "year": qyear}, None)
 
         return make_response(intent_info, result)
     except Exception as e:

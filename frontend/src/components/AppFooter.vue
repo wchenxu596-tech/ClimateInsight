@@ -7,13 +7,11 @@
 
 <style scoped>
 .app-footer {
-  width: 100%; padding: 32px var(--ci-page-gutter);
   display: flex; justify-content: space-between; align-items: center;
-  background: var(--ci-glass-strong); backdrop-filter: blur(12px);
-  border-top: 1px solid rgb(192 201 193 / 30%);
-  color: var(--ci-text-muted); font-size: 14px;
+  padding: 8px var(--ci-page-gutter);
+  color: var(--ci-text-muted); font-size: 12px;
 }
 @media (max-width: 767px) {
-  .app-footer { flex-direction: column; gap: 8px; text-align: center }
+  .app-footer { flex-direction: column; gap: 4px; text-align: center }
 }
 </style>

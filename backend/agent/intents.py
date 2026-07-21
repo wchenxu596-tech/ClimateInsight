@@ -3,7 +3,7 @@ import re, json
 from urllib.request import Request, urlopen
 from urllib.error import URLError
 from config import AGENT_ENABLED, LLM_BASE_URL, LLM_API_KEY, LLM_MODEL, DATA_YEAR
-from agent.prompts import SYSTEM_PROMPT, VALID_INTENTS, VALID_CATEGORIES, EXPECTED_KEYS
+from agent.prompts import SYSTEM_PROMPT, VALID_INTENTS, VALID_CATEGORIES, VALID_YEARS_LIST, EXPECTED_KEYS
 
 YEAR_PAT = re.compile(r"(20\d{2})\s*年")
 MONTH_RANGE_PAT = re.compile(r"(\d{1,2})\s*(?:月|到|至|\-|~)\s*(\d{1,2})\s*月?")
@@ -82,7 +82,22 @@ def detect_llm(question: str) -> dict | None:
                 if not isinstance(months, list) or not all(isinstance(m, int) and 1 <= m <= 12 for m in months):
                     result.pop("months", None)
 
-        result["year"] = DATA_YEAR
+        if intent == "compare":
+            years = result.get("years")
+            if not isinstance(years, list) or not all(y in VALID_YEARS_LIST for y in years):
+                return None
+            result["years"] = years
+            return result
+
+        # 年份处理：LLM提供的年份需校验，否则用默认值
+        llm_year = result.get("year")
+        if llm_year is not None and llm_year in VALID_YEARS_LIST:
+            result["year"] = llm_year
+        elif "year" in allowed_keys:
+            result["year"] = DATA_YEAR
+        else:
+            result.pop("year", None)
+
         return result
 
     except Exception:

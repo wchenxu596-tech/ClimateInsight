@@ -1,5 +1,5 @@
 <template>
-  <GlassCard :style="{ minHeight: minHeight }">
+  <GlassCard class="cp-root">
     <div class="cp-header">
       <div>
         <div class="cp-title">{{ title }}</div>
@@ -7,10 +7,7 @@
       </div>
       <slot name="actions" />
     </div>
-    <div v-if="loading" style="height:200px;display:flex;align-items:center;justify-content:center">
-      <el-icon class="is-loading"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/></svg></el-icon>
-    </div>
-    <el-empty v-else-if="empty" :description="emptyText || '暂无数据'" />
+    <el-empty v-if="empty" :description="emptyText || '暂无数据'" style="flex:1;min-height:0" />
     <div v-else class="cp-body">
       <slot />
     </div>
@@ -19,19 +16,13 @@
 
 <script setup>
 import GlassCard from './GlassCard.vue'
-defineProps({
-  title: String,
-  subtitle: String,
-  loading: Boolean,
-  empty: Boolean,
-  emptyText: String,
-  minHeight: { type: String, default: '320px' },
-})
+defineProps({ title:String, subtitle:String, empty:Boolean, emptyText:String })
 </script>
 
 <style scoped>
-.cp-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; padding:20px 20px 0 }
-.cp-title { font-size:18px; font-weight:600; color:var(--ci-primary) }
-.cp-subtitle { font-size:13px; color:var(--ci-text-muted); margin-top:4px }
-.cp-body { padding: 0 20px 20px; min-height: 260px }
+.cp-root { display:flex; flex-direction:column; overflow:visible }
+.cp-header { display:flex; justify-content:space-between; align-items:flex-start; padding:10px 14px 0; flex-shrink:0 }
+.cp-title { font-size:14px; font-weight:600; color:var(--ci-primary) }
+.cp-subtitle { font-size:11px; color:var(--ci-text-muted); margin-top:2px }
+.cp-body { flex:1; min-height:0; padding:4px 12px 10px; overflow:hidden }
 </style>
