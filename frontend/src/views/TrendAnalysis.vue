@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="page-title">📈 2024 年月度气温变化</h2>
+    <h2 class="page-title">📈 {{ selectedYear }} 年月度气温变化</h2>
 
     <!-- Loading -->
     <el-skeleton v-if="loading" :rows="6" animated />
@@ -17,13 +17,13 @@
         <v-chart v-if="hasData" :option="option" style="height:400px" autoresize />
         <el-empty v-else description="暂无月度数据" />
       </div>
-      <p class="data-note">数据来源: NOAA GSOD 2024 | 仅含单年数据，同比趋势需导入更多年份</p>
+      <p class="data-note">数据来源: NOAA GSOD {{ selectedYear }} | 同比趋势请切换年份对比</p>
     </template>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, inject, watch } from 'vue'
 import VChart from 'vue-echarts'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -32,6 +32,7 @@ import { GridComponent, TooltipComponent, LegendComponent } from 'echarts/compon
 use([CanvasRenderer, LineChart, BarChart, GridComponent, TooltipComponent, LegendComponent])
 import { getMonthly } from '../api'
 
+const selectedYear = inject('selectedYear')
 const loading = ref(true)
 const error = ref('')
 const hasData = ref(false)
@@ -50,7 +51,7 @@ const option = reactive({
 async function load() {
   loading.value = true; error.value = ''; hasData.value = false
   try {
-    const res = await getMonthly(2024)
+    const res = await getMonthly(selectedYear.value)
     if (res.data?.data && res.data.data.length > 0) {
       option.xAxis.data = res.data.data.map(r => r.obs_month + '月')
       option.series[0].data = res.data.data.map(r => parseFloat(r.avg_temp))
@@ -64,6 +65,7 @@ async function load() {
   } finally { loading.value = false }
 }
 
+watch(selectedYear, load)
 onMounted(load)
 </script>
 

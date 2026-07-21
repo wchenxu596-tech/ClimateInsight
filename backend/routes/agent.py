@@ -5,7 +5,7 @@ from config import DATA_YEAR
 
 bp = Blueprint("agent", __name__)
 
-VALID_YEARS = {2024}
+VALID_YEARS = {2022, 2023, 2024}
 
 @bp.route("/api/agent/query", methods=["POST"])
 def agent_query_route():

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="page-title">🗺️ 气候带分析 — 2024</h2>
+    <h2 class="page-title">🗺️ 气候带分析 — {{ selectedYear }}</h2>
 
     <!-- Loading -->
     <el-skeleton v-if="loading" :rows="6" animated />
@@ -23,13 +23,13 @@
           </el-empty>
         </div>
       </div>
-      <p class="data-note">数据来源: NOAA GSOD 2024 | 仅含 2024 年数据</p>
+      <p class="data-note">数据来源: NOAA GSOD {{ selectedYear }}</p>
     </template>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, inject, watch } from 'vue'
 import VChart from 'vue-echarts'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -39,6 +39,7 @@ use([CanvasRenderer, PieChart, TooltipComponent, LegendComponent])
 
 import { getZones } from '../api'
 
+const selectedYear = inject('selectedYear')
 const loading = ref(true)
 const error = ref('')
 const hasData = ref(false)
@@ -57,7 +58,7 @@ const pieOption = reactive({
 async function load() {
   loading.value = true; error.value = ''; hasData.value = false
   try {
-    const res = await getZones()
+    const res = await getZones(selectedYear.value)
     if (res.data?.data && res.data.data.length > 0) {
       const zoneCN = { tropical: '热带', temperate: '温带', continental: '大陆性', polar: '寒带', arid: '干旱' }
       const colors = { tropical: '#e53935', temperate: '#43a047', continental: '#1e88e5', polar: '#8e24aa', arid: '#fb8c00' }
@@ -73,6 +74,7 @@ async function load() {
   } finally { loading.value = false }
 }
 
+watch(selectedYear, load)
 onMounted(load)
 </script>
 

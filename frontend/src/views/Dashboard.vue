@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="page-title">📊 全球气候总览 — {{ dataYear }}</h2>
+    <h2 class="page-title">📊 全球气候总览 — {{ selectedYear }}</h2>
 
     <!-- Loading -->
     <el-skeleton v-if="loading" :rows="8" animated />
@@ -9,6 +9,9 @@
     <el-alert v-else-if="error" :title="error" type="error" show-icon closable @close="error='';load()">
       <el-button type="primary" size="small" @click="load()">重试</el-button>
     </el-alert>
+
+    <!-- Empty -->
+    <el-empty v-else-if="empty" description="该年份暂无数据" />
 
     <!-- Data -->
     <template v-else>
@@ -43,7 +46,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, inject, watch } from 'vue'
 import VChart from 'vue-echarts'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -54,9 +57,10 @@ use([CanvasRenderer, BarChart, LineChart, PieChart, GridComponent, TooltipCompon
 import { getKPI, getMonthly, getZones, getRanking } from '../api'
 import { stationCN } from '../utils/stationNames'
 
+const selectedYear = inject('selectedYear')
 const loading = ref(true)
 const error = ref('')
-const dataYear = ref(2024)
+const empty = ref(false)
 
 const kpis = ref([
   { name:'avg_temp', label:'全球年均温', value:'--' },
@@ -70,13 +74,15 @@ const zoneOption = reactive({ tooltip:{trigger:'item'}, series:[{type:'pie',radi
 const hotOption = reactive({ tooltip:{trigger:'axis', valueFormatter: v => typeof v === 'number' ? v.toFixed(2) : v}, xAxis:{type:'category',data:[],axisLabel:{rotate:30}}, yAxis:{type:'value',name:'°C'}, series:[{type:'bar',data:[]}] })
 
 async function load() {
-  loading.value = true; error.value = ''
+  loading.value = true; error.value = ''; empty.value = false
+  const y = selectedYear.value
   try {
     const [kpiRes, monRes, zoneRes, rankRes] = await Promise.all([
-      getKPI(2024), getMonthly(2024), getZones(2024), getRanking(2024, 'hottest', 15)
+      getKPI(y), getMonthly(y), getZones(y), getRanking(y, 'hottest', 15)
     ])
-    dataYear.value = kpiRes.data?.meta?.data_year || 2024
-
+    if (!kpiRes.data?.data?.length && !monRes.data?.data?.length) {
+      empty.value = true; loading.value = false; return
+    }
     if (kpiRes.data?.data) {
       const m = {}; kpiRes.data.data.forEach(x => { m[x.kpi_name] = x.kpi_value })
       kpis.value[0].value = (m.global_avg_temp || '--') + '°C'
@@ -108,6 +114,7 @@ async function load() {
   }
 }
 
+watch(selectedYear, load)
 onMounted(load)
 </script>
 
