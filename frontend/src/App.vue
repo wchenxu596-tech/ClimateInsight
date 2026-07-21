@@ -6,10 +6,10 @@
     <AppTopNav />
     <main class="app-main">
       <AppSidebar v-model:year="selectedYear" :available-years="availableYears" />
-      <router-view />
+      <div class="main-content"><router-view /></div>
+      <BIAgent ref="agentRef" />
     </main>
     <AppFooter />
-    <BIAgent />
   </div>
 </template>
 
