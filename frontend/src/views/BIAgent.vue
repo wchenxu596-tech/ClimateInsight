@@ -70,7 +70,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, nextTick, watch, onBeforeUnmount } from 'vue'
+import { ref, reactive, nextTick, watch, onBeforeUnmount, inject } from 'vue'
 import VChart from 'vue-echarts'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -78,6 +78,8 @@ import { BarChart, LineChart, PieChart } from 'echarts/charts'
 import { GridComponent, TooltipComponent, LegendComponent } from 'echarts/components'
 use([CanvasRenderer, BarChart, LineChart, PieChart, GridComponent, TooltipComponent, LegendComponent])
 import { askAgent } from '../api'
+
+const selectedYear = inject('selectedYear', ref(2024))
 
 const isOpen = ref(false)
 const question = ref('')
@@ -202,7 +204,7 @@ async function send() {
   loading.value = true
   scrollBottom()
   try {
-    const res = await askAgent(q, 2024)
+    const res = await askAgent(q, selectedYear.value)
     const d = res.data?.data || {}
     const msg = { role: 'assistant', content: d.answer || '查询完成' }
     if (d.table) { msg.table = d.table; msg.table.rows = tableRows(d.table) }

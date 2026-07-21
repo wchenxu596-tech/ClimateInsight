@@ -2,7 +2,7 @@
 from db import query_dict
 
 VALID_CATEGORIES = {"hottest", "coldest", "rainiest", "most_extreme"}
-VALID_YEARS = {2024}
+VALID_YEARS = {2022, 2023, 2024}
 
 def get_kpi(year: int) -> list[dict]:
     if year not in VALID_YEARS: raise ValueError(f"unsupported year: {year}")

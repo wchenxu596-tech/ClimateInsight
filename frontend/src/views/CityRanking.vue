@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="page-title">🏆 城市气候排行榜 — 2024</h2>
+    <h2 class="page-title">🏆 城市气候排行榜 — {{ selectedYear }}</h2>
 
     <!-- Loading -->
     <el-skeleton v-if="loading" :rows="6" animated />
@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, inject, watch } from 'vue'
 import VChart from 'vue-echarts'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -41,6 +41,7 @@ use([CanvasRenderer, BarChart, GridComponent, TooltipComponent])
 import { getRanking } from '../api'
 import { stationCN } from '../utils/stationNames'
 
+const selectedYear = inject('selectedYear')
 const category = ref('hottest')
 const loading = ref(true)
 const error = ref('')
@@ -58,7 +59,7 @@ const option = reactive({
 async function load() {
   loading.value = true; error.value = ''; hasData.value = false
   try {
-    const res = await getRanking(2024, category.value, 15)
+    const res = await getRanking(selectedYear.value, category.value, 15)
     if (res.data?.data && res.data.data.length > 0) {
       option.xAxis.data = res.data.data.map(r => stationCN(r.station_name || r.station_id).substring(0, 20))
       option.series[0].data = res.data.data.map(r => parseFloat(r.value))
@@ -70,6 +71,8 @@ async function load() {
     console.error(e)
   } finally { loading.value = false }
 }
+
+watch(selectedYear, load)
 load()
 </script>
 
