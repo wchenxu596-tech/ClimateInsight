@@ -1,0 +1,36 @@
+/* ClimateInsight 设计令牌 — Biophilic Harmony */
+:root {
+  --ci-primary: #14422d;
+  --ci-primary-container: #2d5a43;
+  --ci-primary-soft: #bceecf;
+  --ci-green: #3a674f;
+  --ci-secondary: #39656b;
+  --ci-secondary-soft: #bae8ef;
+  --ci-tertiary: #8b3713;
+  --ci-tertiary-soft: #ffdbce;
+  --ci-error: #ba1a1a;
+  --ci-surface: #faf9f7;
+  --ci-surface-lowest: #ffffff;
+  --ci-surface-container: #efeeec;
+  --ci-surface-variant: #e3e2e0;
+  --ci-text: #1a1c1b;
+  --ci-text-muted: #414943;
+  --ci-outline: #717973;
+  --ci-outline-variant: #c0c9c1;
+  --ci-glass: rgb(255 255 255 / 85%);
+  --ci-glass-strong: rgb(250 249 247 / 90%);
+  --ci-shadow: 0 4px 20px rgb(0 0 0 / 5%);
+  --ci-radius-sm: 8px;
+  --ci-radius-md: 12px;
+  --ci-radius-lg: 16px;
+  --ci-content-max: 1200px;
+  --ci-page-gutter: 40px;
+  --ci-gap: 24px;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --ci-page-gutter: 20px;
+    --ci-gap: 16px;
+  }
+}
