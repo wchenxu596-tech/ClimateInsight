@@ -1,7 +1,7 @@
 <template>
   <!-- 折叠态 -->
   <button v-if="!isOpen" class="agent-fab" @click="isOpen=true" aria-label="打开 AI 气候分析助手">
-    <span>🤖</span>
+    <span>🌿</span>
   </button>
 
   <!-- 展开态 -->
@@ -9,10 +9,9 @@
     <!-- 标题栏 -->
     <div class="panel-hd" @mousedown="onDragStart">
       <div class="panel-hd-left">
-        <span class="panel-icon">🤖</span>
+        <span class="panel-icon">🌿</span>
         <div>
           <div class="panel-title">AI 气候分析助手</div>
-          <div class="panel-sub">可根据当前 {{ selectedYear }} 年数据回答</div>
         </div>
       </div>
       <el-button size="small" text @click.stop="isOpen=false" style="color:#fff">−</el-button>
@@ -64,7 +63,7 @@ const isOpen = ref(false)
 const question = ref('')
 const loading = ref(false)
 const msgBox = ref(null)
-const messages = ref([{ role:'assistant', content:'👋 你好！我是气候智能分析助手。支持：全球均温、月度趋势、站点排名、气候带分布。' }])
+const messages = ref([{ role:'assistant', content:'🌿 你好！我是气候智能分析助手。支持：全球均温、月度趋势、站点排名、气候带分布。' }])
 
 const quickQuestions = ['全球平均气温？','最热的5个站点？','各月温度变化？','气候带分布？','降水最多的站点？','最冷的3个站点？']
 
@@ -113,7 +112,6 @@ async function send(){
     const msg={ role:'assistant', content: d.answer||'查询完成' }
     if(d.table){ msg.table=d.table; msg.table.rows=tableRows(d.table) }
     if(d.chart){ msg.chart=d.chart; msg.chartOption=chartToOption(d.chart) }
-    if(d.limitations?.length) msg.content+='\n⚠️ '+d.limitations.join('；')
     messages.value.push(msg)
   }catch(e){ messages.value.push({ role:'assistant', content:'分析助手暂不可用，请确认后端已启动。' }) }
   loading.value=false; scrollBottom()
