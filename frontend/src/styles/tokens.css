@@ -23,7 +23,7 @@
   --ci-radius-sm: 8px;
   --ci-radius-md: 12px;
   --ci-radius-lg: 16px;
-  --ci-content-max: 1200px;
+  --ci-content-max: none;
   --ci-page-gutter: 40px;
   --ci-gap: 24px;
 }

@@ -23,7 +23,7 @@
           </GlassCard>
         </aside>
 
-        <ChartPanel :title="'月度气温变化'" :subtitle="'全球月度平均、平均最高与平均最低气温'" style="flex:1;min-height:0">
+        <ChartPanel :title="'月度气温变化'" :subtitle="'全球月度平均、平均最高与平均最低气温'" style="flex:1;min-height:0;min-width:0">
           <v-chart ref="chartRef" :option="option" autoresize />
         </ChartPanel>
       </div>
@@ -77,7 +77,7 @@ watch(selectedYear,load,{immediate:true})
 </script>
 
 <style scoped>
-.trend-layout { display:grid; grid-template-columns:200px 1fr; gap:12px; flex:1; min-height:0; overflow:hidden }
+.trend-layout { display:grid; grid-template-columns:200px minmax(0,1fr); gap:12px; flex:1; min-height:0; overflow:hidden }
 .trend-sidebar { display:flex; flex-direction:column; gap:8px; overflow-y:auto }
 .sb-card { padding:12px; flex-shrink:0 }
 .sb-label { font-size:10px; font-weight:500; text-transform:uppercase; letter-spacing:0.05em; color:var(--ci-text-muted); margin-bottom:4px }
