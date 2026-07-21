@@ -24,6 +24,7 @@ data/gsod_*/
 .env
 .env.local
 backend/.env
+frontend/.env
 
 # OS
 .DS_Store

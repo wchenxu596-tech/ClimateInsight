@@ -1,0 +1,42 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: climate_backend
+    environment:
+      MYSQL_HOST: tier4_stu_mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: climate_dw
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 123456
+      API_PORT: 5000
+      FLASK_DEBUG: "false"
+      CORS_ORIGINS: http://localhost:8080
+      AGENT_ENABLED: "false"
+      LLM_BASE_URL: ""
+      LLM_API_KEY: ""
+      LLM_MODEL: ""
+    ports:
+      - "5000:5000"
+    networks:
+      - default
+      - tier4_net
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: climate_frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+networks:
+  default:
+  tier4_net:
+    external: true
+    name: tier4_hadoop_net
