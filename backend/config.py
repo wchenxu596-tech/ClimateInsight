@@ -17,7 +17,7 @@ DATA_YEAR = 2024
 HIVE_CONTAINER = os.getenv("HIVE_CONTAINER", "hive-server")
 HIVE_JDBC_URL = os.getenv("HIVE_JDBC_URL", "jdbc:hive2://hive-server:10000")
 
-AGENT_ENABLED = os.getenv("AGENT_ENABLED", "false").lower() == "true"
-LLM_BASE_URL = os.getenv("LLM_BASE_URL", "")
+AGENT_ENABLED = os.getenv("AGENT_ENABLED", "true").lower() == "true"
+LLM_BASE_URL = os.getenv("LLM_BASE_URL", "https://api.deepseek.com/v1")
 LLM_API_KEY = os.getenv("LLM_API_KEY", "")
-LLM_MODEL = os.getenv("LLM_MODEL", "")
+LLM_MODEL = os.getenv("LLM_MODEL", "deepseek-chat")
