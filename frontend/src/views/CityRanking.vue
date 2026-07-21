@@ -49,7 +49,7 @@ const hasData = ref(false)
 const units = { hottest: '°C', coldest: '°C', rainiest: 'mm', most_extreme: '天' }
 
 const option = reactive({
-  tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+  tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, valueFormatter: v => typeof v === 'number' ? v.toFixed(2) : v },
   xAxis: { type: 'category', data: [], axisLabel: { rotate: 30 } },
   yAxis: { type: 'value', name: units[category.value] },
   series: [{ type: 'bar', data: [], itemStyle: { color: '#e53935' } }]

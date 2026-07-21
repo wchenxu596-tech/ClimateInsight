@@ -65,9 +65,9 @@ const kpis = ref([
   { name:'hottest', label:'年度最高温', value:'--' },
 ])
 
-const monthlyOption = reactive({ tooltip:{trigger:'axis'}, xAxis:{type:'category',data:[]}, yAxis:{type:'value',name:'°C'}, series:[] })
+const monthlyOption = reactive({ tooltip:{trigger:'axis', valueFormatter: v => typeof v === 'number' ? v.toFixed(2) : v}, xAxis:{type:'category',data:[]}, yAxis:{type:'value',name:'°C'}, series:[] })
 const zoneOption = reactive({ tooltip:{trigger:'item'}, series:[{type:'pie',radius:['40%','70%'],data:[]}] })
-const hotOption = reactive({ tooltip:{trigger:'axis'}, xAxis:{type:'category',data:[],axisLabel:{rotate:30}}, yAxis:{type:'value',name:'°C'}, series:[{type:'bar',data:[]}] })
+const hotOption = reactive({ tooltip:{trigger:'axis', valueFormatter: v => typeof v === 'number' ? v.toFixed(2) : v}, xAxis:{type:'category',data:[],axisLabel:{rotate:30}}, yAxis:{type:'value',name:'°C'}, series:[{type:'bar',data:[]}] })
 
 async function load() {
   loading.value = true; error.value = ''

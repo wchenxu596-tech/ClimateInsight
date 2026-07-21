@@ -36,7 +36,7 @@ const loading = ref(true)
 const error = ref('')
 const hasData = ref(false)
 const option = reactive({
-  tooltip: { trigger: 'axis' },
+  tooltip: { trigger: 'axis', valueFormatter: v => typeof v === 'number' ? v.toFixed(2) : v },
   legend: { data: ['均温', '均最高', '均最低'] },
   xAxis: { type: 'category', data: [] },
   yAxis: { type: 'value', name: '°C' },
