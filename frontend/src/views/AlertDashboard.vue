@@ -30,7 +30,7 @@
         <div class="alert-body">
           <GlassCard class="alert-table-card">
             <div class="card-hd">⚠️ 预警站点排名</div>
-            <div class="table-wrap"><el-table :data="stations" border stripe size="small" max-height="100%" style="width:100%">
+            <div class="table-wrap"><el-table :data="stations" border stripe size="small" style="width:100%">
               <el-table-column label="风险等级" width="110" align="center">
                 <template #default="{row}">
                   <span :class="['alert-badge', row.alert_level]">{{ row.alert_label }}</span>

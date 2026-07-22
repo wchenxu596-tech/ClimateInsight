@@ -107,7 +107,7 @@ async function send(){
 <style scoped>
 .ai-root {
   position: absolute; inset: 0; overflow: hidden;
-  display: flex; flex-direction: column;
+  display: flex; flex-direction: column; padding-bottom: 20px;
   background: var(--ci-glass-strong); backdrop-filter: blur(16px);
   border-radius: 12px;
   box-shadow: -2px 0 16px rgb(0 0 0 / 6%);
@@ -137,5 +137,5 @@ async function send(){
 .msg.assistant .msg-bubble { background: #fff; color: var(--ci-text); box-shadow: 0 1px 3px rgb(0 0 0 / 6%); }
 .msg-table, .msg-chart { margin-top: 4px; }
 .ai-input { display: flex; gap: 4px; padding: 8px 10px; border-top: 1px solid var(--ci-outline-variant); flex-shrink: 0; }
-.ai-quick { padding: 4px 10px 20px; display: flex; flex-wrap: wrap; flex-shrink: 0; }
+.ai-quick { padding: 4px 10px; display: flex; flex-wrap: wrap; flex-shrink: 0; }
 </style>
