@@ -22,7 +22,6 @@
       </div>
       <RightNav :active-page="activePage" @select="onNavSelect" @toggle-ai="aiOpen = !aiOpen" />
     </main>
-    <AppFooter />
   </div>
 </template>
 
@@ -32,7 +31,6 @@ import AppTopNav from './components/AppTopNav.vue'
 import AppSidebar from './components/AppSidebar.vue'
 import RightNav from './components/RightNav.vue'
 import AIPanel from './components/AIPanel.vue'
-import AppFooter from './components/AppFooter.vue'
 import bgImage from './assets/images/climate-landscape.webp'
 
 const availableYears = Array.from({length: 16}, (_, i) => 2010 + i)

@@ -11,7 +11,7 @@
 <style scoped>
 .topnav {
   display: flex; align-items: center; gap: 12px; height: 48px; padding: 0 20px; margin-bottom: 8px;
-  background: rgb(250 249 247 / 82%); backdrop-filter: blur(20px) saturate(1.4);
+  background: rgb(250 249 247 / 70%); backdrop-filter: blur(20px) saturate(1.4);
   border: 1px solid rgb(255 255 255 / 45%); border-radius: 24px;
   box-shadow: 0 2px 8px rgb(0 0 0 / 5%);
   flex-shrink: 0;
