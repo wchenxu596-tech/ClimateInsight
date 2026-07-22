@@ -23,6 +23,7 @@
   --ci-radius-sm: 8px;
   --ci-radius-md: 12px;
   --ci-radius-lg: 16px;
+  --ci-content-max: 1400px;
   --ci-page-gutter: 12px;
   --ci-gap: 24px;
   --ci-transition-speed: .35s;
