@@ -124,7 +124,7 @@ watch(selectedYear,load,{immediate:true})
 
 .ranking-body { display:grid; grid-template-columns: minmax(0, 7fr) minmax(260px, 5fr); gap:12px; flex:1; min-height:0; overflow:hidden }
 .table-card { display:flex; flex-direction:column; overflow:hidden; padding:19px }
-.table-card-wrap { flex:1; min-height:0; overflow-y:auto; scrollbar-width:none }
+.table-card-wrap { flex:1; min-height:0; overflow-y:auto; scrollbar-width:none; overscroll-behavior:contain }
 .table-card-wrap::-webkit-scrollbar { display:none }
 .table-hd { font-size:17px; font-weight:600; color:var(--ci-primary); margin-bottom:10px; flex-shrink:0 }
 

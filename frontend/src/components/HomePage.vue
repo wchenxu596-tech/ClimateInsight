@@ -63,13 +63,13 @@ defineExpose({ scrollToPage })
   position: absolute; inset: 0;
   overflow-y: scroll; overflow-x: hidden;
   scroll-snap-type: y mandatory;
-  scroll-behavior: smooth;
+  scroll-behavior: smooth; overscroll-behavior: contain;
   scrollbar-width: none;
 }
 .home-root::-webkit-scrollbar { display: none; }
 .snap-section {
   height: 100%; scroll-snap-align: start;
   display: flex; flex-direction: column;
-  padding: 10px 0;
+  padding: 10px 0 20px;
 }
 </style>

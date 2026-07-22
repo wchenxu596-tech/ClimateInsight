@@ -127,7 +127,7 @@ async function send(){
 .ai-close { background: none; border: none; color: #fff; cursor: pointer; font-size: 20px; padding: 2px 8px; border-radius: 4px; }
 .ai-close:hover { background: rgb(255 255 255 / 15%); }
 
-.ai-msgs { flex: 1; overflow-y: auto; padding: 10px; background: rgb(250 249 247 / 60%); min-height: 0; scrollbar-width: none; }
+.ai-msgs { flex: 1; overflow-y: auto; padding: 10px; background: rgb(250 249 247 / 60%); min-height: 0; scrollbar-width: none; overscroll-behavior: contain; }
 .ai-msgs::-webkit-scrollbar { display: none; }
 .msg { margin-bottom: 6px; display: flex; }
 .msg.user { justify-content: flex-end; }

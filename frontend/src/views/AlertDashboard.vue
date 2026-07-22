@@ -162,7 +162,7 @@ watch(selectedYear, load, { immediate: true })
 
 .alert-body { display:grid; grid-template-columns:1fr 1fr; gap:12px; flex:1; min-height:0; overflow:hidden }
 .alert-table-card { display:flex; flex-direction:column; overflow:hidden; padding:10px }
-.table-wrap { flex:1; min-height:0; overflow-y:auto; scrollbar-width:none }
+.table-wrap { flex:1; min-height:0; overflow-y:auto; scrollbar-width:none; overscroll-behavior:contain }
 .table-wrap::-webkit-scrollbar { display:none }
 .alert-chart-card { display:flex; flex-direction:column; overflow:hidden; padding:12px }
 
