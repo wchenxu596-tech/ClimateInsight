@@ -38,7 +38,7 @@
               </el-table-column>
               <el-table-column label="气象站" min-width="150">
                 <template #default="{row}">
-                  <router-link :to="`/stations/${row.station_id}`" class="station-link">{{ row.station_name }}</router-link>
+                  <router-link :to="`/stations/${row.station_id}`" class="station-link">{{ stationCN(row.station_name) }}</router-link>
                 </template>
               </el-table-column>
               <el-table-column label="气候带" width="80" align="center">
@@ -95,6 +95,7 @@ import { getAlertRisk, getAlertMonthly } from '../api'
 import PageState from '../components/PageState.vue'
 import GlassCard from '../components/GlassCard.vue'
 import { chartColors, baseTooltip, baseGrid, monthLabels } from '../composables/useDashboardTheme'
+import { stationCN } from '../utils/stationNames'
 
 const selectedYear = inject('selectedYear')
 const loading = ref(true); const error = ref(''); const empty = ref(false)

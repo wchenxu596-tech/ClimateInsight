@@ -29,7 +29,7 @@
         <Transition name="fade">
           <GlassCard v-if="selected" class="map-popup">
             <div class="popup-hd">
-              <span class="popup-name">{{ selected.station_name }}</span>
+              <span class="popup-name">{{ stationCN(selected.station_name) }}</span>
               <button class="popup-close" @click="selected=null">✕</button>
             </div>
             <div class="popup-body">
@@ -62,6 +62,7 @@ import { getStations } from '../api'
 import PageState from '../components/PageState.vue'
 import GlassCard from '../components/GlassCard.vue'
 import { baseTooltip } from '../composables/useDashboardTheme'
+import { stationCN } from '../utils/stationNames'
 
 const selectedYear = inject('selectedYear')
 const loading = ref(true); const error = ref(''); const empty = ref(false)
@@ -142,7 +143,7 @@ const chartOption = reactive({
     textStyle:{ color:'#1a1c1b', fontSize:13 },
     formatter: (p) => {
       const d = p.data; if (!d) return ''
-      return `<strong>${d.name||'未知'}</strong><br/>气温: ${d.avgTemp??'--'}°C &nbsp; 降水: ${d.precip??'--'}mm<br/>气候带: ${zoneCN[d.zone]||d.zone||'--'}`
+      return `<strong>${stationCN(d.name)||'未知'}</strong><br/>气温: ${d.avgTemp??'--'}°C &nbsp; 降水: ${d.precip??'--'}mm<br/>气候带: ${zoneCN[d.zone]||d.zone||'--'}`
     }
   },
   geo: {
@@ -160,7 +161,7 @@ const chartOption = reactive({
 function updateChart() {
   const data = filtered.value.map(s => ({
     value:[s.lon,s.lat], risk:s.risk_events||0, zone:s.climate_zone,
-    name:s.station_name, avgTemp:s.avg_temp, precip:s.total_precip, sid:s.station_id,
+    name:stationCN(s.station_name), avgTemp:s.avg_temp, precip:s.total_precip, sid:s.station_id,
     symbolSize:Math.max(3,Math.min(8,((s.risk_events||0)/10)+3)),
     itemStyle:{ color:zoneColors[s.climate_zone]||'#999', opacity:.7 },
   }))
