@@ -28,7 +28,7 @@
         </div>
 
         <!-- 图表区 -->
-        <GlassCard class="map-chart-card">
+        <GlassCard class="map-chart-card" @wheel.prevent.stop>
           <v-chart ref="chartRef" :option="chartOption" autoresize style="flex:1;min-height:0" @click="onChartClick" />
         </GlassCard>
 
@@ -54,7 +54,7 @@
 </template>
 
 <script setup>
-import { ref, inject, watch, reactive, computed } from 'vue'
+import { ref, inject, watch, reactive, computed, onMounted, onUnmounted, onActivated, onDeactivated } from 'vue'
 import VChart from 'vue-echarts'
 import { use, registerMap } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -138,8 +138,8 @@ const filtered = computed(() => {
 
 function applyGeoFocus() {
   const r = filterRegion.value ? regions[filterRegion.value] : null
-  chartOption.geo.center = r ? r.center : [0, 20]
-  chartOption.geo.zoom  = r ? r.zoom  : 1.5
+  chartOption.geo.center = r ? r.center : [5, 15]
+  chartOption.geo.zoom  = r ? r.zoom  : 1.15
 }
 
 const chartOption = reactive({
@@ -151,7 +151,7 @@ const chartOption = reactive({
     }
   },
   geo: {
-    map:'world', roam:true, center:[0,20], zoom:1.5,
+    map:'world', roam:true, center:[5,15], zoom:1.15,
     left:'2%', right:'2%', top:'2%', bottom:'2%',
     itemStyle:{ areaColor:'#ebe4da', borderColor:'#cdc2b2', borderWidth:.5 },
     emphasis:{ itemStyle:{ areaColor:'#e0d6c8' }, label:{ show:false } },
@@ -190,6 +190,20 @@ function restoreMapState() {
     if(m){ selected.value=st.selected; filterRegion.value=st.filterRegion||''; applyGeoFocus() }
   } catch(_){}
 }
+
+// 锁定页面滚动 — 地图区域内滚轮/拖拽不触发页面切换
+function lockScroll() {
+  const el = document.querySelector('.home-root')
+  if (el) { el.dataset.prevOverflow = el.style.overflow || ''; el.style.overflow = 'hidden' }
+}
+function unlockScroll() {
+  const el = document.querySelector('.home-root')
+  if (el) el.style.overflow = el.dataset.prevOverflow || ''
+}
+onMounted(lockScroll)
+onActivated(lockScroll)
+onDeactivated(unlockScroll)
+onUnmounted(unlockScroll)
 
 async function load() {
   const id=++requestId; loading.value=true; error.value=''; empty.value=false
