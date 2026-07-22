@@ -20,7 +20,7 @@
 
         <GlassCard class="table-card">
           <div class="table-hd">详细数据</div>
-          <el-table :data="tableData" border stripe size="small" style="flex:1">
+          <div class="table-card-wrap"><el-table :data="tableData" border stripe size="small" style="width:100%">
             <el-table-column prop="rank_num" label="#" width="50" align="center">
               <template #default="{row}"><span :style="{fontWeight:row.rank_num===1?'bold':'',color:row.rank_num===1?'var(--ci-tertiary)':''}">{{ row.rank_num }}</span></template>
             </el-table-column>
@@ -30,7 +30,7 @@
             <el-table-column :label="meta.label+'('+meta.unit+')'" width="120" align="right">
               <template #default="{row}">{{ safeNumber(row.value)?.toFixed(2)??'--' }}</template>
             </el-table-column>
-          </el-table>
+          </el-table></div>
         </GlassCard>
       </div>
     </PageState>
@@ -123,7 +123,9 @@ watch(selectedYear,load,{immediate:true})
 .cat-btn.active { background:var(--ci-primary); color:#fff }
 
 .ranking-body { display:grid; grid-template-columns: minmax(0, 7fr) minmax(260px, 5fr); gap:12px; flex:1; min-height:0; overflow:hidden }
-.table-card { display:flex; flex-direction:column; overflow:hidden; padding:14px }
+.table-card { display:flex; flex-direction:column; overflow:hidden; padding:19px }
+.table-card-wrap { flex:1; min-height:0; overflow-y:auto; scrollbar-width:none }
+.table-card-wrap::-webkit-scrollbar { display:none }
 .table-hd { font-size:17px; font-weight:600; color:var(--ci-primary); margin-bottom:10px; flex-shrink:0 }
 
 @media (max-width: 767px) {

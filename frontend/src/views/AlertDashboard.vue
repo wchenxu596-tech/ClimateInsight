@@ -161,8 +161,9 @@ watch(selectedYear, load, { immediate: true })
 .kpi-yellow .kpi-value { color:#b8820e }
 
 .alert-body { display:grid; grid-template-columns:1fr 1fr; gap:12px; flex:1; min-height:0; overflow:hidden }
-.alert-table-card { display:flex; flex-direction:column; overflow:hidden; padding:0 0 4px }
-.table-wrap { flex:1; min-height:0; overflow:hidden }
+.alert-table-card { display:flex; flex-direction:column; overflow:hidden; padding:10px }
+.table-wrap { flex:1; min-height:0; overflow-y:auto; scrollbar-width:none }
+.table-wrap::-webkit-scrollbar { display:none }
 .alert-chart-card { display:flex; flex-direction:column; overflow:hidden; padding:12px }
 
 .card-hd { font-size:18px; font-weight:600; color:var(--ci-primary); padding:10px 14px 6px; flex-shrink:0 }

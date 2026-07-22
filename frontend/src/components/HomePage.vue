@@ -70,5 +70,6 @@ defineExpose({ scrollToPage })
 .snap-section {
   height: 100%; scroll-snap-align: start;
   display: flex; flex-direction: column;
+  padding: 10px 0;
 }
 </style>
