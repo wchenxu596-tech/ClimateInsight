@@ -30,7 +30,7 @@
         <div class="alert-body">
           <GlassCard class="alert-table-card">
             <div class="card-hd">⚠️ 预警站点排名</div>
-            <div class="table-wrap" ref="twrap"><el-table :data="stations" border stripe size="small" :max-height="th" style="width:100%">
+            <div class="table-wrap"><el-table :data="stations" border stripe size="small" style="width:100%;height:100%" height="100%">
               <el-table-column label="风险等级" width="110" align="center">
                 <template #default="{row}">
                   <span :class="['alert-badge', row.alert_level]">{{ row.alert_label }}</span>
@@ -84,7 +84,7 @@
 </template>
 
 <script setup>
-import { ref, inject, watch, reactive, onMounted, nextTick } from 'vue'
+import { ref, inject, watch, reactive } from 'vue'
 import VChart from 'vue-echarts'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -98,13 +98,7 @@ import { chartColors, baseTooltip, baseGrid, monthLabels } from '../composables/
 
 const selectedYear = inject('selectedYear')
 const loading = ref(true); const error = ref(''); const empty = ref(false)
-const twrap = ref(null); const th = ref(400)
 let requestId = 0
-onMounted(() => {
-  if (!twrap.value) return
-  const ro = new ResizeObserver(() => { if (twrap.value) th.value = twrap.value.clientHeight })
-  ro.observe(twrap.value)
-})
 
 const stats = ref({ red_count:0, orange_count:0, yellow_count:0, blue_count:0, top_risk:0, top_station:'' })
 const stations = ref([])
@@ -167,12 +161,12 @@ watch(selectedYear, load, { immediate: true })
 .kpi-yellow .kpi-value { color:#b8820e }
 
 .alert-body { display:grid; grid-template-columns:1fr 1fr; gap:12px; flex:1; min-height:0; overflow:hidden }
-.alert-table-card { display:flex; flex-direction:column; overflow:hidden; padding:10px }
-.table-wrap { flex:1; min-height:0; overflow-y:auto; scrollbar-width:none; overscroll-behavior:contain }
+.alert-table-card { display:grid; grid-template-rows:auto 1fr; overflow:hidden; padding:10px }
+.table-wrap { min-height:0; overflow:hidden; scrollbar-width:none; margin-top:4px }
 .table-wrap::-webkit-scrollbar { display:none }
 .alert-chart-card { display:flex; flex-direction:column; overflow:hidden; padding:12px }
 
-.card-hd { font-size:18px; font-weight:600; color:var(--ci-primary); padding:10px 14px 6px; flex-shrink:0 }
+.card-hd { font-size:18px; font-weight:600; color:var(--ci-primary); padding:4px 4px 0; flex-shrink:0 }
 
 .alert-badge { display:inline-block; padding:3px 10px; border-radius:12px; font-size:14px; font-weight:600; white-space:nowrap }
 .alert-badge.red { background:#ba1a1a20; color:#ba1a1a }
