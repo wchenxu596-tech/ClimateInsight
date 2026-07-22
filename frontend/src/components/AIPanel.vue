@@ -106,7 +106,7 @@ async function send(){
 
 <style scoped>
 .ai-root {
-  position: relative;
+  position: relative; overflow: hidden;
   min-width: 400px; height: 100%;
   display: flex; flex-direction: column;
   background: var(--ci-glass-strong); backdrop-filter: blur(16px);
