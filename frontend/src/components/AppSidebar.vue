@@ -9,8 +9,16 @@
 </template>
 
 <script setup>
-defineProps({ year: Number, availableYears: Array })
+import { onMounted, nextTick, ref } from 'vue'
+const props = defineProps({ year: Number, availableYears: Array })
 defineEmits(['update:year'])
+const scrollEl = ref(null)
+onMounted(() => {
+  nextTick(() => {
+    const el = document.querySelector('.sb-year.active')
+    if (el) el.scrollIntoView({ block: 'center' })
+  })
+})
 </script>
 
 <style scoped>

@@ -37,7 +37,7 @@ const availableYears = Array.from({length: 16}, (_, i) => 2010 + i)
 const selectedYear = ref(2024)
 provide('selectedYear', selectedYear)
 
-const activePage = ref('dashboard')
+const activePage = ref('map')
 provide('activePage', activePage)
 
 const aiOpen = ref(false)

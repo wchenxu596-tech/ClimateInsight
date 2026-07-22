@@ -30,7 +30,7 @@
         <div class="alert-body">
           <GlassCard class="alert-table-card">
             <div class="card-hd">⚠️ 预警站点排名</div>
-            <div class="table-wrap"><el-table :data="stations" border stripe size="small" style="width:100%">
+            <div class="table-wrap" ref="twrap"><el-table :data="stations" border stripe size="small" :max-height="th" style="width:100%">
               <el-table-column label="风险等级" width="110" align="center">
                 <template #default="{row}">
                   <span :class="['alert-badge', row.alert_level]">{{ row.alert_label }}</span>
@@ -84,7 +84,7 @@
 </template>
 
 <script setup>
-import { ref, inject, watch, reactive } from 'vue'
+import { ref, inject, watch, reactive, onMounted, nextTick } from 'vue'
 import VChart from 'vue-echarts'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -98,7 +98,9 @@ import { chartColors, baseTooltip, baseGrid, monthLabels } from '../composables/
 
 const selectedYear = inject('selectedYear')
 const loading = ref(true); const error = ref(''); const empty = ref(false)
+const twrap = ref(null); const th = ref(400)
 let requestId = 0
+onMounted(() => { nextTick(() => { if (twrap.value) th.value = twrap.value.clientHeight }) })
 
 const stats = ref({ red_count:0, orange_count:0, yellow_count:0, blue_count:0, top_risk:0, top_station:'' })
 const stations = ref([])
