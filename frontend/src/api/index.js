@@ -29,5 +29,11 @@ export const getStations = (year) =>
   api.get('/stations', { params: { year } })
 export const getStationDetail = (stationId, year = 2024) =>
   api.get('/stations/detail', { params: { station_id: stationId, year } })
+export const getTrendMultiYear = (years = '2022,2023,2024') =>
+  api.get('/trend/multi-year', { params: { years } })
+export const getZonesMultiYear = (years = '2022,2023,2024') =>
+  api.get('/zones/multi-year', { params: { years } })
+export const getZoneStats = (year) =>
+  api.get('/zones/stats', { params: { year } })
 
 export default api
