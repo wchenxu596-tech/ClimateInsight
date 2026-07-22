@@ -4,6 +4,7 @@
 from flask import Blueprint, jsonify, request
 from db import query_dict
 from config import DATA_YEAR
+from cache import cached
 
 bp = Blueprint("alert", __name__)
 
@@ -12,6 +13,7 @@ def _year():
 
 
 @bp.route("/api/alert/risk")
+@cached(300)
 def api_alert_risk():
     """极端天气风险评分 — 按站聚合，四级预警"""
     y = _year()
@@ -85,6 +87,7 @@ def api_alert_risk():
 
 
 @bp.route("/api/alert/monthly")
+@cached(300)
 def api_alert_monthly():
     """月度极端事件聚合（全站）"""
     y = _year()
@@ -112,6 +115,7 @@ def api_alert_monthly():
 
 
 @bp.route("/api/stations")
+@cached(300)
 def api_stations():
     """全球气象站概要（用于地图散点）"""
     y = _year()

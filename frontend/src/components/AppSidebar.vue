@@ -26,7 +26,7 @@ onMounted(() => {
   width: 100%; min-width: 0; align-self: center;
   display: flex; flex-direction: column; align-items: center; gap: 6px;
   padding: 12px 6px;
-  background: rgb(250 249 247 / 40%); backdrop-filter: blur(20px) saturate(1.4);
+  background: rgb(250 249 247 / 70%); backdrop-filter: blur(12px) saturate(1.4);
   border: 1px solid rgb(255 255 255 / 45%); border-radius: 16px;
   box-shadow: 0 2px 8px rgb(0 0 0 / 5%);
 }
@@ -38,8 +38,8 @@ onMounted(() => {
   scrollbar-width: none;
 }
 .sb-scroll::-webkit-scrollbar { display: none; }
-.sb-year { width: 64px; height: 34px; min-height: 34px; border: none; border-radius: 10px; background: transparent; color: var(--ci-text-muted); font-size: 16px; font-weight: 600; cursor: pointer; transition: all .2s; font-family: inherit; flex-shrink: 0; }
+.sb-year { width: 64px; height: 34px; min-height: 34px; border: none; border-radius: 10px; background: transparent; color: var(--ci-text-muted); font-size: 16px; font-weight: 600; cursor: pointer; font-family: inherit; flex-shrink: 0; position: relative; }
 .sb-year:hover { background: rgb(58 103 79 / 10%); color: var(--ci-primary); }
-.sb-year.active { background: var(--ci-primary); color: #fff; box-shadow: 0 4px 12px rgb(20 66 45 / 25%); }
+.sb-year.active { background: var(--ci-primary); color: #fff; animation: pulse-glow 3s ease-in-out infinite; }
 @media (max-width: 900px) { .sidebar { width: auto; flex-direction: row; padding: 6px 10px; gap: 6px; border-radius: 14px; align-self: stretch; } .sb-logo { font-size: 16px; margin-bottom: 0; } .sb-label { display: none; } .sb-scroll { flex-direction: row; overflow-y: visible; overflow-x: auto; max-height: none; } .sb-year { width: 40px; height: 28px; min-height: 28px; font-size: 12px; } }
 </style>

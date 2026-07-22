@@ -17,9 +17,10 @@
   --ci-text-muted: #414943;
   --ci-outline: #717973;
   --ci-outline-variant: #c0c9c1;
-  --ci-glass: rgb(255 255 255 / 40%);
-  --ci-glass-strong: rgb(250 249 247 / 40%);
+  --ci-glass: rgb(255 255 255 / 70%);
+  --ci-glass-strong: rgb(250 249 247 / 70%);
   --ci-shadow: 0 4px 20px rgb(0 0 0 / 5%);
+  --ci-shadow-hover: 0 8px 30px rgb(0 0 0 / 9%);
   --ci-radius-sm: 8px;
   --ci-radius-md: 12px;
   --ci-radius-lg: 16px;
@@ -27,6 +28,33 @@
   --ci-page-gutter: 12px;
   --ci-gap: 24px;
   --ci-transition-speed: .35s;
+  --ci-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ci-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ── 微交互关键帧 ── */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 4px 16px rgb(20 66 45 / 25%); }
+  50%      { box-shadow: 0 4px 24px rgb(20 66 45 / 40%); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+@keyframes border-rotate {
+  0%   { --border-angle: 0deg; }
+  100% { --border-angle: 360deg; }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* 渐变边框角度（需 @property 支持，Chrome 119+） */
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
 }
 
 @media (max-width: 767px) {

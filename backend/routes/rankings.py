@@ -2,6 +2,7 @@
 from flask import Blueprint, jsonify, request
 from db import query_dict
 from config import DATA_YEAR
+from cache import cached
 
 bp = Blueprint("rankings", __name__)
 
@@ -36,6 +37,7 @@ def api_trend():
 
 # ── 多年月度趋势 ──
 @bp.route("/api/trend/multi-year")
+@cached(300)
 def api_trend_multi_year():
     years_str = request.args.get("years", "2022,2023,2024")
     years = [int(y) for y in years_str.split(",") if int(y) in VALID_YEARS]
@@ -50,6 +52,7 @@ def api_trend_multi_year():
 
 # ── 多年气候带分布 ──
 @bp.route("/api/zones/multi-year")
+@cached(300)
 def api_zones_multi_year():
     years_str = request.args.get("years", "2022,2023,2024")
     years = [int(y) for y in years_str.split(",") if int(y) in VALID_YEARS]
@@ -64,6 +67,7 @@ def api_zones_multi_year():
 
 # ── 气候带详细统计 ──
 @bp.route("/api/zones/stats")
+@cached(300)
 def api_zones_stats():
     y = _year()
     rows = query_dict(
@@ -75,3 +79,42 @@ def api_zones_stats():
         (y,),
     )
     return jsonify({"code": 0, "message": "ok", "data": rows, "meta": {"data_year": y}})
+
+
+# ── KPI 历史数据（多年对比） ──
+@bp.route("/api/trend/kpi-history")
+@cached(300)
+def api_trend_kpi_history():
+    years_str = request.args.get("years", "2015,2016,2017,2021,2022,2023,2024,2025")
+    years = [int(y) for y in years_str.split(",") if int(y) in VALID_YEARS]
+    if not years:
+        years = [2024]
+    rows = query_dict(
+        "SELECT data_year as year, kpi_name, kpi_value, kpi_unit FROM ads_kpi WHERE data_year IN ({}) ORDER BY data_year, kpi_name"
+        .format(",".join(["%s"] * len(years))),
+        tuple(years),
+    )
+    return jsonify({"code": 0, "message": "ok", "data": rows, "meta": {"years": years}})
+
+
+# ── 气候带多年趋势（温度/降水/极端事件） ──
+@bp.route("/api/zones/trend")
+@cached(300)
+def api_zones_trend():
+    years_str = request.args.get("years", "2015,2016,2017,2021,2022,2023,2024,2025")
+    years = [int(y) for y in years_str.split(",") if int(y) in VALID_YEARS]
+    if not years:
+        years = [2024]
+    rows = query_dict(
+        "SELECT year, climate_zone, "
+        "ROUND(AVG(avg_temp), 1) as avg_temp, "
+        "ROUND(AVG(total_precip), 1) as avg_precip, "
+        "SUM(extreme_days) as extreme_days, "
+        "SUM(heat_wave_days) as heat_wave_days, "
+        "SUM(cold_wave_days) as cold_wave_days, "
+        "COUNT(DISTINCT station_id) as station_count "
+        "FROM dws_station_monthly WHERE year IN ({}) GROUP BY year, climate_zone ORDER BY year, climate_zone"
+        .format(",".join(["%s"] * len(years))),
+        tuple(years),
+    )
+    return jsonify({"code": 0, "message": "ok", "data": rows, "meta": {"years": years}})

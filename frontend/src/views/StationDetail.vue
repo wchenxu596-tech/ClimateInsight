@@ -4,8 +4,7 @@
       <div class="detail-root">
         <!-- 站信息头 -->
         <div class="detail-hd">
-          <button class="detail-back" @click="$router.back()">← 返回</button>
-          <div>
+          <div class="detail-hd-left">
             <div class="detail-title">{{ info?.station_name || '未知站点' }}</div>
             <div class="detail-meta">
               <span>{{ zoneCN[info?.climate_zone] || '' }}</span>
@@ -14,12 +13,13 @@
               <span class="meta-sep">·</span>
               <span>{{ selectedYear }} 年</span>
             </div>
+            <div class="detail-rank" v-if="rankings.length">
+              <el-tag v-for="r in rankings" :key="r.category" :type="r.category==='hottest'?'danger':r.category==='coldest'?'info':'warning'" size="small" style="margin:2px">
+                {{ catLabel(r) }}
+              </el-tag>
+            </div>
           </div>
-          <div class="detail-rank" v-if="rankings.length">
-            <el-tag v-for="r in rankings" :key="r.category" :type="r.category==='hottest'?'danger':r.category==='coldest'?'info':'warning'" size="small" style="margin:2px">
-              {{ catLabel(r) }}
-            </el-tag>
-          </div>
+          <button class="detail-back" @click="$router.back()" title="ESC 返回">← 返回</button>
         </div>
 
         <!-- 卡片行 -->
@@ -75,8 +75,8 @@
 </template>
 
 <script setup>
-import { ref, inject, watch, reactive, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, inject, watch, reactive, computed, onMounted, onUnmounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import VChart from 'vue-echarts'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -90,7 +90,13 @@ import ChartPanel from '../components/ChartPanel.vue'
 import { chartColors, baseTooltip, baseGrid, monthLabels } from '../composables/useDashboardTheme'
 
 const route = useRoute()
+const router = useRouter()
 const selectedYear = inject('selectedYear')
+
+// ESC 键返回
+function onKeyDown(e) { if (e.key === 'Escape') router.back() }
+onMounted(() => window.addEventListener('keydown', onKeyDown))
+onUnmounted(() => window.removeEventListener('keydown', onKeyDown))
 const loading = ref(true); const error = ref(''); const empty = ref(false)
 let requestId = 0
 
@@ -167,14 +173,26 @@ watch(route, () => { if (route.params.id) load() }, { immediate: true })
 </script>
 
 <style scoped>
-.detail-root { display:flex; flex-direction:column; flex:1; min-height:0; gap:12px; overflow-y:auto; padding-right:4px }
-.detail-hd { display:flex; align-items:flex-start; flex-wrap:wrap; gap:8px; flex-shrink:0 }
-.detail-back { background:none; border:1px solid var(--ci-primary-soft); color:var(--ci-primary); font-size:13px; font-weight:500; cursor:pointer; padding:4px 14px; border-radius:30px; flex-shrink:0; transition:all .2s; margin-top:4px; font-family:inherit }
-.detail-back:hover { background:var(--ci-primary); color:#fff; border-color:var(--ci-primary) }
+.detail-root { display:flex; flex-direction:column; flex:1; min-width:0; min-height:0; gap:12px; overflow-y:auto; padding-right:4px }
+.detail-hd { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-shrink:0 }
+.detail-hd-left { flex:1; min-width:0 }
+.detail-back {
+  display:inline-flex; align-items:center; gap:4px;
+  background:rgb(255 255 255 / 60%); backdrop-filter:blur(8px);
+  border:1px solid rgb(192 201 193 / 30%); color:var(--ci-primary);
+  font-size:16px; font-weight:600; cursor:pointer;
+  padding:8px 20px; border-radius:12px; flex-shrink:0;
+  transition:all .25s var(--ci-ease-out); font-family:inherit;
+  box-shadow:0 2px 8px rgb(0 0 0 / 5%);
+}
+.detail-back:hover {
+  background:var(--ci-primary); color:#fff; border-color:var(--ci-primary);
+  transform:translateY(-1px); box-shadow:0 4px 16px rgb(20 66 45 / 25%);
+}
 .detail-title { font-size:22px; font-weight:700; color:var(--ci-primary) }
-.detail-meta { font-size:12px; color:var(--ci-text-muted); margin-top:2px }
+.detail-meta { font-size:13px; color:var(--ci-text-muted); margin-top:2px }
 .meta-sep { margin:0 6px }
-.detail-rank { display:flex; flex-wrap:wrap }
+.detail-rank { display:flex; flex-wrap:wrap; margin-top:4px }
 
 .detail-kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; flex-shrink:0 }
 .dk-card { padding:10px 14px; display:flex; flex-direction:column }

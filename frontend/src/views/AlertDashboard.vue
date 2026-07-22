@@ -150,8 +150,8 @@ watch(selectedYear, load, { immediate: true })
 </script>
 
 <style scoped>
-.alert-root { display:flex; flex-direction:column; flex:1; min-height:0; gap:10px }
-.alert-kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; flex-shrink:0 }
+.alert-root { display:flex; flex-direction:column; flex:1; min-width:0; min-height:0; gap:10px }
+.alert-kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; flex-shrink:0; min-width:0 }
 .kpi-card { padding:14px 18px; min-height:84px; display:flex; flex-direction:column; justify-content:center }
 .kpi-label { font-size:15px; font-weight:500; text-transform:uppercase; letter-spacing:0.05em; color:var(--ci-text-muted); margin-bottom:4px }
 .kpi-value { font-size:28px; font-weight:700; line-height:1.1 }
@@ -161,7 +161,7 @@ watch(selectedYear, load, { immediate: true })
 .kpi-orange .kpi-value { color:#8b3713 }
 .kpi-yellow .kpi-value { color:#b8820e }
 
-.alert-body { display:grid; grid-template-columns:1fr 1fr; gap:12px; flex:1; min-height:0; overflow:hidden }
+.alert-body { display:grid; grid-template-columns:1fr 1fr; gap:12px; flex:1; min-width:0; min-height:0; overflow:hidden }
 .alert-table-card { display:grid; grid-template-rows:auto 1fr; overflow:hidden; padding:10px }
 .table-wrap { min-height:0; overflow:hidden; scrollbar-width:none; margin-top:4px }
 .table-wrap::-webkit-scrollbar { display:none }

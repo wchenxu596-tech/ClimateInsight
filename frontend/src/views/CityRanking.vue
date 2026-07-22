@@ -127,7 +127,7 @@ watch(selectedYear, load, { immediate: true })
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
   gap: 12px;
-  flex: 1; min-height: 0;
+  flex: 1; min-width: 0; min-height: 0;
 }
 
 .rank-cell {
@@ -143,7 +143,7 @@ watch(selectedYear, load, { immediate: true })
 .cell-title { font-size: 16px; font-weight: 600; color: var(--ci-primary); }
 .cell-unit { font-size: 12px; color: var(--ci-text-muted); margin-left: auto; }
 
-.cell-chart { flex: 1; min-height: 0; }
+.cell-chart { flex: 1; min-width: 0; min-height: 0; }
 
 @media (max-width: 900px) {
   .grid-2x2 { grid-template-columns: 1fr; grid-template-rows: auto; }
