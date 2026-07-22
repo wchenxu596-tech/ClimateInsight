@@ -115,7 +115,7 @@ watch(selectedYear,load,{immediate:true})
 </script>
 
 <style scoped>
-.page-sub { color:var(--ci-text-muted); font-size:13px; margin-top:-2px; margin-bottom:8px }
+.page-sub { color:var(--ci-text-muted); font-size:12px; margin-bottom:6px }
 .ranking-header { display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:8px; flex-shrink:0 }
 .cat-tabs { display:flex; gap:3px; background:var(--ci-surface-container); border-radius:8px; padding:3px }
 .cat-btn { padding:6px 12px; border:none; border-radius:6px; background:transparent; color:var(--ci-text-muted); font-size:13px; font-weight:500; cursor:pointer; transition:all .2s; white-space:nowrap }

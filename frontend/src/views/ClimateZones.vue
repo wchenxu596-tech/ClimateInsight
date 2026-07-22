@@ -58,7 +58,7 @@ watch(selectedYear,load,{immediate:true})
 </script>
 
 <style scoped>
-.page-sub { color:var(--ci-text-muted); font-size:13px; margin-top:-2px; margin-bottom:10px; flex-shrink:0 }
+.page-sub { color:var(--ci-text-muted); font-size:12px; margin-bottom:6px; flex-shrink:0 }
 .zones-grid { display:grid; grid-template-columns:minmax(0, 7fr) minmax(260px, 5fr); gap:12px; flex:1; min-height:0; overflow:hidden }
 .zones-list-card { padding:16px; display:flex; flex-direction:column; overflow:hidden }
 .zl-header { font-size:15px; font-weight:600; color:var(--ci-primary); margin-bottom:12px; flex-shrink:0 }

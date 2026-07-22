@@ -1,16 +1,14 @@
 <template>
-  <div class="agent-root" :class="{ 'agent-root--open': isOpen }">
-    <!-- 收回态 -->
-    <Transition name="fab">
-      <button v-if="!isOpen" class="agent-fab" @click="isOpen = true" title="AI 分析助手">🌿</button>
-    </Transition>
-
-    <!-- 展开态 -->
-    <Transition name="panel">
-      <aside v-if="isOpen" class="agent-sidebar">
+  <!-- 收回态浮标 -->
+  <Transition name="fab">
+    <button v-if="!visible" class="agent-fab" @click="$emit('toggle')" title="AI 分析助手">🌿</button>
+  </Transition>
+  <!-- 展开态面板 -->
+  <Transition name="panel">
+    <aside v-if="visible" class="agent-sidebar">
       <div class="agent-hd">
         <span>🌿 AI 分析助手</span>
-        <button class="agent-toggle" @click="isOpen = false" title="收起">◀</button>
+        <button class="agent-toggle" @click="$emit('toggle')" title="收起">◀</button>
       </div>
 
       <div class="agent-msgs" ref="msgBox">
@@ -38,7 +36,6 @@
       </div>
     </aside>
     </Transition>
-  </div>
 </template>
 
 <script setup>
@@ -49,19 +46,18 @@ use([CanvasRenderer, BarChart, LineChart, PieChart, GridComponent, TooltipCompon
 import { askAgent } from '../api'
 import { chartColors, baseTooltip, baseGrid } from '../composables/useDashboardTheme'
 
+const props = defineProps({ visible: { type: Boolean, default: false } })
+defineEmits(['toggle'])
+
 const selectedYear = inject('selectedYear', ref(2024))
-const isOpen = ref(false)
 const question = ref('')
 const loading = ref(false)
 const msgBox = ref(null)
 const messages = ref([{ role:'assistant', content:'🌿 你好！我是气候智能分析助手。支持：全球均温、月度趋势、站点排名、气候带分布、多年对比。' }])
 const quickQuestions = ['全球平均气温？','最热的5个站点？','各月温度变化？','气候带分布？','2022和2023哪个更热？']
 
-defineExpose({ open:()=>{ isOpen.value=true }, toggle:()=>{ isOpen.value=!isOpen.value } })
-
-watch(isOpen, async(v) => {
+watch(() => props.visible, async(v) => {
   if (v) { await nextTick(); scrollBottom() }
-  // 等CSS过渡完成后再触发resize
   setTimeout(() => window.dispatchEvent(new Event('resize')), 500)
 })
 function scrollBottom(){ nextTick(()=>{ const el=msgBox.value; if(el) el.scrollTop=el.scrollHeight }) }
@@ -96,15 +92,10 @@ async function send(){
 </script>
 
 <style scoped>
-.agent-root {
-  width: 320px; min-width: 0; overflow: hidden; flex-shrink: 0;
-  display: flex; flex-direction: column;
-}
-.agent-root:not(:has(.agent-sidebar)) {
-  width: 0;
-}
+/* AI 分析助手 — 悬浮面板 */
 .agent-sidebar {
-  width: 320px; flex-shrink: 0; flex-grow: 1;
+  position: fixed; top: 80px; right: 90px; bottom: 20px; z-index: 100;
+  width: 360px;
   display: flex; flex-direction: column;
   background: var(--ci-glass-strong); backdrop-filter: blur(16px);
   border: 1px solid rgb(192 201 193 / 30%); border-radius: 16px;
