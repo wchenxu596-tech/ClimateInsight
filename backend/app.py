@@ -16,12 +16,14 @@ from routes.dashboard import bp as dashboard_bp
 from routes.rankings import bp as rankings_bp
 from routes.ai import bp as ai_bp
 from routes.agent import bp as agent_bp
+from routes.alert import bp as alert_bp
 
 app.register_blueprint(health_bp)
 app.register_blueprint(dashboard_bp)
 app.register_blueprint(rankings_bp)
 app.register_blueprint(ai_bp)
 app.register_blueprint(agent_bp)
+app.register_blueprint(alert_bp)
 
 # ── SPA 静态文件 ──
 @app.route("/", defaults={"path": ""})

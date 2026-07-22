@@ -6,6 +6,8 @@
       <router-link to="/trend" active-class="nav-active" class="topnav-link">趋势</router-link>
       <router-link to="/ranking" active-class="nav-active" class="topnav-link">排名</router-link>
       <router-link to="/zones" active-class="nav-active" class="topnav-link">气候带</router-link>
+      <router-link to="/alert" active-class="nav-active" class="topnav-link">⚠️ 预警</router-link>
+      <router-link to="/map" active-class="nav-active" class="topnav-link">🗺️ 地图</router-link>
     </div>
     <div class="topnav-right">
       <el-button class="menu-btn" @click="drawerOpen = true" size="small" text>☰</el-button>
@@ -24,6 +26,7 @@ const drawerOpen = ref(false)
 const routes = [
   { path: '/', label: '📊 总览' }, { path: '/trend', label: '📈 趋势' },
   { path: '/ranking', label: '🏆 排名' }, { path: '/zones', label: '🗺️ 气候带' },
+  { path: '/alert', label: '⚠️ 预警' }, { path: '/map', label: '🗺️ 地图' },
 ]
 </script>
 
