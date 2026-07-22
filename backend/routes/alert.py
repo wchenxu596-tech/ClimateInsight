@@ -7,11 +7,8 @@ from config import DATA_YEAR
 
 bp = Blueprint("alert", __name__)
 
-VALID_YEARS = {2022, 2023, 2024}
-
 def _year():
-    y = request.args.get("year", DATA_YEAR, type=int)
-    return y if y in VALID_YEARS else DATA_YEAR
+    return request.args.get("year", DATA_YEAR, type=int)
 
 
 @bp.route("/api/alert/risk")
@@ -20,7 +17,7 @@ def api_alert_risk():
     y = _year()
     limit = min(request.args.get("limit", 100, type=int), 500)
 
-    rows = query_dict("""
+    rows = list(query_dict("""
         SELECT station_id, station_name, latitude, longitude, climate_zone,
                SUM(heat_wave_days)  AS heat_wave,
                SUM(cold_wave_days)  AS cold_wave,
@@ -33,7 +30,7 @@ def api_alert_risk():
         FROM dws_station_monthly
         WHERE year = %s
         GROUP BY station_id, station_name, latitude, longitude, climate_zone
-    """, (y,))
+    """, (y,)))
 
     # 计算风险分
     for r in rows:

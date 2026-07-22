@@ -4,6 +4,7 @@
       <div class="detail-root">
         <!-- 站信息头 -->
         <div class="detail-hd">
+          <button class="detail-back" @click="$router.back()">← 返回</button>
           <div>
             <div class="detail-title">{{ info?.station_name || '未知站点' }}</div>
             <div class="detail-meta">
@@ -167,7 +168,9 @@ watch(route, () => { if (route.params.id) load() }, { immediate: true })
 
 <style scoped>
 .detail-root { display:flex; flex-direction:column; flex:1; min-height:0; gap:12px; overflow-y:auto; padding-right:4px }
-.detail-hd { display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; flex-shrink:0 }
+.detail-hd { display:flex; align-items:flex-start; flex-wrap:wrap; gap:8px; flex-shrink:0 }
+.detail-back { background:none; border:1px solid var(--ci-primary-soft); color:var(--ci-primary); font-size:13px; font-weight:500; cursor:pointer; padding:4px 14px; border-radius:30px; flex-shrink:0; transition:all .2s; margin-top:4px; font-family:inherit }
+.detail-back:hover { background:var(--ci-primary); color:#fff; border-color:var(--ci-primary) }
 .detail-title { font-size:22px; font-weight:700; color:var(--ci-primary) }
 .detail-meta { font-size:12px; color:var(--ci-text-muted); margin-top:2px }
 .meta-sep { margin:0 6px }

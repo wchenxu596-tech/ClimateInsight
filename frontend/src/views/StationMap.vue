@@ -39,7 +39,7 @@
               <div class="popup-row"><span class="popup-label">年均温</span><span class="popup-val">{{ selected.avg_temp }}°C</span></div>
               <div class="popup-row"><span class="popup-label">年降水</span><span class="popup-val">{{ selected.total_precip }} mm</span></div>
               <div class="popup-row"><span class="popup-label">极端事件</span><span class="popup-val">{{ selected.risk_events }} 天</span></div>
-              <router-link :to="`/stations/${selected.station_id}`" class="popup-link">查看详情 →</router-link>
+              <router-link :to="`/stations/${selected.station_id}`" class="popup-link" @click="saveMapState">查看详情 →</router-link>
             </div>
           </GlassCard>
         </Transition>
@@ -52,15 +52,19 @@
 import { ref, inject, watch, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import VChart from 'vue-echarts'
-import { use } from 'echarts/core'
+import { use, registerMap } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
 import { ScatterChart } from 'echarts/charts'
-import { GridComponent, TooltipComponent } from 'echarts/components'
-use([CanvasRenderer, ScatterChart, GridComponent, TooltipComponent])
+import { GeoComponent, TooltipComponent } from 'echarts/components'
+use([CanvasRenderer, ScatterChart, GeoComponent, TooltipComponent])
+
+import worldJson from '../assets/map/world.json'
+registerMap('world', worldJson)
+
 import { getStations } from '../api'
 import PageState from '../components/PageState.vue'
 import GlassCard from '../components/GlassCard.vue'
-import { chartColors, baseTooltip } from '../composables/useDashboardTheme'
+import { baseTooltip } from '../composables/useDashboardTheme'
 
 const router = useRouter()
 const selectedYear = inject('selectedYear')
@@ -92,23 +96,25 @@ const chartOption = reactive({
               气候带: ${zoneCN[d.zone] || d.zone || '--'}`
     }
   },
-  grid: { left:'3%', right:'3%', top:'3%', bottom:'3%' },
-  xAxis: {
-    type: 'value', name: '经度',
-    min: -180, max: 180,
-    splitLine: { show: true, lineStyle: { color: chartColors.grid, type:'dashed' } },
-    axisLabel: { color: chartColors.text, fontSize: 10 },
-    nameTextStyle: { color: chartColors.text, fontSize: 10 },
-  },
-  yAxis: {
-    type: 'value', name: '纬度',
-    min: -90, max: 90,
-    splitLine: { show: true, lineStyle: { color: chartColors.grid, type:'dashed' } },
-    axisLabel: { color: chartColors.text, fontSize: 10 },
-    nameTextStyle: { color: chartColors.text, fontSize: 10 },
+  geo: {
+    map: 'world',
+    roam: false,
+    left: '2%', right: '2%', top: '2%', bottom: '2%',
+    silent: true,
+    itemStyle: {
+      areaColor: '#ebe4da',
+      borderColor: '#cdc2b2',
+      borderWidth: 0.5,
+    },
+    emphasis: {
+      itemStyle: { areaColor: '#e0d6c8' },
+      label: { show: false },
+    },
+    label: { show: false },
   },
   series: [{
     type: 'scatter',
+    coordinateSystem: 'geo',
     symbolSize: 5,
     data: [],
     emphasis: { itemStyle: { borderColor: '#14422d', borderWidth: 2 } },
@@ -145,6 +151,31 @@ function onChartClick(params) {
   }
 }
 
+function saveMapState() {
+  if (!selected.value) return
+  sessionStorage.setItem('mapReturnState', JSON.stringify({
+    selected: selected.value,
+    filterZone: filterZone.value,
+    year: selectedYear.value,
+  }))
+}
+
+function restoreMapState() {
+  const saved = sessionStorage.getItem('mapReturnState')
+  if (!saved) return
+  sessionStorage.removeItem('mapReturnState')
+  try {
+    const st = JSON.parse(saved)
+    if (!st.selected || st.year !== selectedYear.value) return
+    // 等数据加载后查找匹配的站点
+    const match = allStations.value.find(s => s.station_id === st.selected.station_id)
+    if (match) {
+      selected.value = st.selected
+      filterZone.value = st.filterZone || ''
+    }
+  } catch (_) {}
+}
+
 async function load() {
   const id = ++requestId
   loading.value = true; error.value = ''; empty.value = false
@@ -156,6 +187,7 @@ async function load() {
     allStations.value = data
     total.value = data.length
     updateChart()
+    restoreMapState()
   } catch (e) { if (id === requestId) { error.value = '站点数据加载失败'; console.error(e) } }
   finally { if (id === requestId) loading.value = false }
 }

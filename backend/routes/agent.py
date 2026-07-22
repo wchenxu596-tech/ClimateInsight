@@ -5,8 +5,6 @@ from config import DATA_YEAR
 
 bp = Blueprint("agent", __name__)
 
-VALID_YEARS = {2022, 2023, 2024}
-
 @bp.route("/api/agent/query", methods=["POST"])
 def agent_query_route():
     if not request.is_json:
@@ -18,10 +16,10 @@ def agent_query_route():
     if len(q) > 300:
         return jsonify({"code": 400, "message": "问题长度不能超过300字"}), 400
 
-    # 年份校验: 必须为整数且仅支持2024
+    # 年份校验: 必须在 2010-2025 范围内
     year = request.json.get("year", DATA_YEAR)
-    if not isinstance(year, int) or year not in VALID_YEARS:
-        return jsonify({"code": 400, "message": f"仅支持 {VALID_YEARS} 年数据，收到: {year}"}), 400
+    if not isinstance(year, int) or year < 2010 or year > 2025:
+        return jsonify({"code": 400, "message": f"仅支持 2010-2025 年数据，收到: {year}"}), 400
 
     # 拒绝SQL注入
     for kw in ["DROP", "DELETE", "INSERT", "UPDATE", "TRUNCATE", "ALTER", "CREATE", "SELECT", "EXEC", "EXECUTE"]:

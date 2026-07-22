@@ -21,7 +21,7 @@ import AppFooter from './components/AppFooter.vue'
 import BIAgent from './views/BIAgent.vue'
 import bgImage from './assets/images/climate-landscape.webp'
 
-const availableYears = [2022, 2023, 2024]
+const availableYears = Array.from({length: 16}, (_, i) => 2010 + i) // 2010-2025
 const selectedYear = ref(2024)
 provide('selectedYear', selectedYear)
 const bgLoaded = ref(false)
