@@ -68,7 +68,7 @@ defineExpose({ scrollToPage })
 }
 .home-root::-webkit-scrollbar { display: none; }
 .snap-section {
-  height: 100%; scroll-snap-align: start;
+  height: 100%; scroll-snap-align: start; box-sizing: border-box;
   display: flex; flex-direction: column;
   padding: 10px 0 20px;
 }
