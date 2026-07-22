@@ -100,7 +100,11 @@ const selectedYear = inject('selectedYear')
 const loading = ref(true); const error = ref(''); const empty = ref(false)
 const twrap = ref(null); const th = ref(400)
 let requestId = 0
-onMounted(() => { nextTick(() => { if (twrap.value) th.value = twrap.value.clientHeight }) })
+onMounted(() => {
+  if (!twrap.value) return
+  const ro = new ResizeObserver(() => { if (twrap.value) th.value = twrap.value.clientHeight })
+  ro.observe(twrap.value)
+})
 
 const stats = ref({ red_count:0, orange_count:0, yellow_count:0, blue_count:0, top_risk:0, top_station:'' })
 const stations = ref([])

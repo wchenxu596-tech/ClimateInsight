@@ -1,13 +1,15 @@
 <template>
   <div class="home-root" ref="homeRoot" @scroll="onScroll">
     <section v-for="s in sections" :key="s.id" :id="'sec-' + s.id" class="snap-section">
-      <component :is="s.comp" />
+      <KeepAlive :max="3">
+        <component v-if="activePage === s.id || isAdjacent(s.id)" :is="s.comp" />
+      </KeepAlive>
     </section>
   </div>
 </template>
 
 <script setup>
-import { ref, inject, onMounted, watch } from 'vue'
+import { ref, inject, watch, computed } from 'vue'
 import StationMap from '../views/StationMap.vue'
 import Dashboard from '../views/Dashboard.vue'
 import TrendAnalysis from '../views/TrendAnalysis.vue'
@@ -27,6 +29,12 @@ const sections = [
   { id: 'zones', comp: ClimateZones },
   { id: 'alert', comp: AlertDashboard },
 ]
+const idxMap = Object.fromEntries(sections.map((s, i) => [s.id, i]))
+function isAdjacent(id) {
+  const cur = idxMap[activePage.value]
+  const target = idxMap[id]
+  return Math.abs(target - cur) <= 1
+}
 
 function onScroll() {
   if (ignoreScroll) return
