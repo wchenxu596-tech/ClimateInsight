@@ -1,0 +1,37 @@
+# ============================================================
+# ClimateInsight Hadoop 集群覆盖配置
+# 使用: docker compose -f docker-compose.yml -f docker-compose.hadoop.yml up -d
+#
+# 将 MySQL 连接切换到外部 Hadoop 集群中的 tier4_stu_mysql，
+# 并连接到外部 tier4_hadoop_net 网络。
+# ============================================================
+
+services:
+  # 禁用内置 MySQL（使用外部集群的）
+  mysql:
+    profiles: ["hadoop"]      # 随 compose up 启动但不对外暴露
+
+  backend:
+    networks:
+      - default
+      - hadoop
+    environment:
+      MYSQL_HOST: tier4_stu_mysql
+      MYSQL_PORT: 3306
+      MYSQL_USER: root
+    depends_on:               # 移除对内置 MySQL 的依赖
+      mysql: null
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import pymysql; pymysql.connect(host='tier4_stu_mysql', port=3306, user='root', password='${MYSQL_PASSWORD}', database='climate_dw').close()\""]
+
+  setup-data:
+    networks:
+      - hadoop
+    environment:
+      MYSQL_HOST: tier4_stu_mysql
+      MYSQL_USER: root
+
+networks:
+  hadoop:
+    name: tier4_hadoop_net
+    external: true

@@ -1,16 +1,37 @@
 # ============================================================
 # ClimateInsight — 全球气候智能分析平台
 #
-# 架构说明：
-#   backend → 外部 MySQL (tier4_stu_mysql:3306)
-#           → 外部 Hadoop/Hive 集群 (tier4_hadoop_net)
-#   frontend → 代理 /api/ 到 backend
+# 一键启动（自包含模式，无需外部依赖）：
+#   docker compose up -d
+#   bash scripts/setup.sh          # 下载并加载 2024 年数据
+#   访问 http://localhost:8080
 #
-# docker compose up -d           # 启动前后端（依赖外部 MySQL）
-# docker compose run --rm data-init  # 初始化数据（从 CSV 写入 MySQL）
+# 连接外部 Hadoop 集群：
+#   docker compose -f docker-compose.yml -f docker-compose.hadoop.yml up -d
 # ============================================================
 
 services:
+  # ─── MySQL 数据库 ───
+  mysql:
+    image: mysql:8.0
+    container_name: climate_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-climate123}
+      MYSQL_DATABASE: climate_dw
+    ports:
+      - "${MYSQL_PORT:-3307}:3306"    # 避免与本地 MySQL 冲突
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./sql/mysql/001_init.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+      - ./sql/mysql/002_create_users.sql:/docker-entrypoint-initdb.d/02_create_users.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-climate123}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
   # ─── Flask API 后端 ───
   backend:
     build:
@@ -19,30 +40,26 @@ services:
     container_name: climate_backend
     env_file: .env
     environment:
-      # 默认连接外部 Hadoop 集群中的 MySQL
-      MYSQL_HOST: ${MYSQL_HOST:-tier4_stu_mysql}
+      MYSQL_HOST: ${MYSQL_HOST:-mysql}
       MYSQL_PORT: ${MYSQL_PORT:-3306}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-climate_dw}
-      MYSQL_USER: ${MYSQL_USER:-root}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      API_PORT: ${API_PORT:-5000}
+      MYSQL_DATABASE: climate_dw
+      MYSQL_USER: ${MYSQL_USER:-climate_app}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-climate123}
+      API_PORT: 5000
       FLASK_DEBUG: ${FLASK_DEBUG:-false}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080}
       AGENT_ENABLED: ${AGENT_ENABLED:-false}
-      LLM_BASE_URL: ${LLM_BASE_URL:-}
-      LLM_API_KEY: ${LLM_API_KEY:-}
-      LLM_MODEL: ${LLM_MODEL:-}
     ports:
       - "${API_PORT:-5000}:5000"
-    networks:
-      - default
-      - hadoop    # 连接外部 Hadoop 网络（MySQL + Hive）
+    depends_on:
+      mysql:
+        condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "python -c \"import pymysql; pymysql.connect(host='${MYSQL_HOST:-tier4_stu_mysql}', port=${MYSQL_PORT:-3306}, user='${MYSQL_USER:-root}', password='${MYSQL_PASSWORD}', database='${MYSQL_DATABASE:-climate_dw}').close()\" && echo 'DB OK'"]
+      test: ["CMD-SHELL", "python -c \"import pymysql; pymysql.connect(host='${MYSQL_HOST:-mysql}', port=${MYSQL_PORT:-3306}, user='${MYSQL_USER:-climate_app}', password='${MYSQL_PASSWORD:-climate123}', database='climate_dw').close()\""]
       interval: 15s
       timeout: 5s
-      retries: 15
-      start_period: 20s
+      retries: 10
+      start_period: 10s
     restart: unless-stopped
 
   # ─── Nginx + Vue3 前端 ───
@@ -55,34 +72,31 @@ services:
       - "${FRONTEND_PORT:-8080}:80"
     depends_on:
       backend:
-        condition: service_healthy  # 等待后端就绪
+        condition: service_healthy
     restart: unless-stopped
 
-  # ─── 数据初始化（一次性任务）───
-  # 从预处理 CSV 直接写入 MySQL，绕过 Hive。
-  # 运行方式：docker compose run --rm data-init
-  # 前置条件：预处理 CSV 放在 ./data/ 目录下
-  data-init:
+  # ─── 数据加载（一次性任务）───
+  # 从 NOAA GSOD 原始数据下载 → 预处理 → 写入 MySQL
+  # docker compose run --rm setup-data
+  setup-data:
     build:
       context: .
-      dockerfile: Dockerfile.init
-    container_name: climate_data_init
-    env_file: .env
+      dockerfile: Dockerfile.setup
+    container_name: climate_setup_data
     environment:
-      MYSQL_HOST: ${MYSQL_HOST:-tier4_stu_mysql}
+      MYSQL_HOST: ${MYSQL_HOST:-mysql}
       MYSQL_PORT: ${MYSQL_PORT:-3306}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-climate_dw}
-      MYSQL_USER: ${MYSQL_USER:-root}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: climate_dw
+      MYSQL_USER: ${MYSQL_USER:-climate_app}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-climate123}
+    depends_on:
+      mysql:
+        condition: service_healthy
     volumes:
-      - ./data:/data          # 挂载 CSV 目录
-    networks:
-      - hadoop
-    profiles: ["init"]        # 默认不启动，需手动运行
+      - climate_data:/data              # 持久化下载的原始数据
+    profiles: ["setup"]                 # 仅手动运行
     restart: no
 
-networks:
-  default:
-  hadoop:
-    name: tier4_hadoop_net
-    external: true            # 外部已有 Hadoop/Hive/MySQL 集群
+volumes:
+  mysql_data:
+  climate_data:
