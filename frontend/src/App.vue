@@ -8,9 +8,11 @@
       <div class="center-area">
         <div class="main-content">
           <AppTopNav />
-          <router-view v-slot="{ Component }">
-            <component :is="Component" :key="$route.path" :active-page="activePage" />
-          </router-view>
+          <div class="content-body">
+            <router-view v-slot="{ Component }">
+              <component :is="Component" :key="$route.path" :active-page="activePage" />
+            </router-view>
+          </div>
         </div>
         <Transition name="ai-slide">
           <div v-if="aiOpen" class="ai-panel">
