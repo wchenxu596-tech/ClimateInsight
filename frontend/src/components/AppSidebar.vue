@@ -15,7 +15,7 @@ defineEmits(['update:year'])
 
 <style scoped>
 .sidebar {
-  width: 100%; min-width: 0; align-self: center;
+  width: 100%; min-width: 0; align-self: stretch;
   display: flex; flex-direction: column; align-items: center; gap: 4px;
   padding: 10px 4px;
   background: rgb(250 249 247 / 82%); backdrop-filter: blur(20px) saturate(1.4);
@@ -25,12 +25,11 @@ defineEmits(['update:year'])
 .sb-logo { font-size: 20px; line-height: 1; margin-bottom: 4px; flex-shrink: 0; }
 .sb-label { font-size: 8px; font-weight: 500; color: var(--ci-text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; flex-shrink: 0; }
 .sb-scroll {
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
-  overflow-y: auto; max-height: 130px; width: 100%;
-  scrollbar-width: thin; scrollbar-color: var(--ci-primary-soft, rgba(58,103,79,0.15)) transparent;
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  overflow-y: auto; min-height: 0; width: 100%;
+  scrollbar-width: none;
 }
-.sb-scroll::-webkit-scrollbar { width: 2px; }
-.sb-scroll::-webkit-scrollbar-thumb { background: var(--ci-primary-soft, rgba(58,103,79,0.2)); border-radius: 4px; }
+.sb-scroll::-webkit-scrollbar { display: none; }
 .sb-year { width: 62px; height: 30px; min-height: 30px; border: none; border-radius: 8px; background: transparent; color: var(--ci-text-muted); font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s; font-family: inherit; flex-shrink: 0; }
 .sb-year:hover { background: rgb(58 103 79 / 10%); color: var(--ci-primary); }
 .sb-year.active { background: var(--ci-primary); color: #fff; box-shadow: 0 4px 12px rgb(20 66 45 / 25%); }
