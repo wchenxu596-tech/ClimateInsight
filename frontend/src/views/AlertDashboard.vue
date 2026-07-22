@@ -149,22 +149,22 @@ watch(selectedYear, load, { immediate: true })
 </script>
 
 <style scoped>
-.alert-root { display:flex; flex-direction:column; flex:1; min-height:0; gap:12px }
-.alert-kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; flex-shrink:0 }
-.kpi-card { padding:12px 16px; min-height:80px; display:flex; flex-direction:column; justify-content:center }
-.kpi-label { font-size:11px; font-weight:500; text-transform:uppercase; letter-spacing:0.05em; color:var(--ci-text-muted); margin-bottom:2px }
-.kpi-value { font-size:26px; font-weight:700; line-height:1.1 }
+.alert-root { display:flex; flex-direction:column; flex:1; min-height:0; gap:8px }
+.alert-kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; flex-shrink:0 }
+.kpi-card { padding:10px 14px; min-height:72px; display:flex; flex-direction:column; justify-content:center }
+.kpi-label { font-size:12px; font-weight:500; text-transform:uppercase; letter-spacing:0.05em; color:var(--ci-text-muted); margin-bottom:2px }
+.kpi-value { font-size:24px; font-weight:700; line-height:1.1 }
 .kpi-value.highlight { color:var(--ci-tertiary) }
 .kpi-desc { font-size:10px; color:var(--ci-text-muted); margin-top:2px }
 .kpi-red .kpi-value { color:#ba1a1a }
 .kpi-orange .kpi-value { color:#8b3713 }
 .kpi-yellow .kpi-value { color:#b8820e }
 
-.alert-body { display:grid; grid-template-columns:1fr 1fr; gap:12px; flex:1; min-height:0; overflow:hidden }
+.alert-body { display:grid; grid-template-columns:1fr 1fr; gap:10px; flex:1; min-height:0; overflow:hidden }
 .alert-table-card { display:flex; flex-direction:column; overflow:hidden; padding:0 0 4px }
-.alert-chart-card { display:flex; flex-direction:column; overflow:hidden; padding:10px }
+.alert-chart-card { display:flex; flex-direction:column; overflow:hidden; padding:8px }
 
-.card-hd { font-size:14px; font-weight:600; color:var(--ci-primary); padding:10px 14px 6px; flex-shrink:0 }
+.card-hd { font-size:15px; font-weight:600; color:var(--ci-primary); padding:8px 12px 4px; flex-shrink:0 }
 
 .alert-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600; white-space:nowrap }
 .alert-badge.red { background:#ba1a1a20; color:#ba1a1a }

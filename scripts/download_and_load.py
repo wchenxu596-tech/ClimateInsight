@@ -278,7 +278,7 @@ def load_to_mysql(csv_path: Path, year: int):
         SUM(extreme_days)*100.0/SUM(obs_days),MAX(max_temp)
         FROM dws_station_monthly WHERE year=%s""", (year,))
     avg_t, stns, ext_pct, htemp = cur.fetchone()
-    cur.executemany("INSERT INTO ads_kPI VALUES(%s,%s,%s,%s,%s)", [
+    cur.executemany("INSERT INTO ads_kpi VALUES(%s,%s,%s,%s,%s)", [
         ("global_avg_temp", round(float(avg_t or 0), 2), "°C", "全球年平均温度", year),
         ("total_stations", int(stns or 0), "个", "活跃气象站总数", year),
         ("extreme_event_pct", round(float(ext_pct or 0), 2), "%", "极端天气日数占比", year),
@@ -303,7 +303,7 @@ def load_to_mysql(csv_path: Path, year: int):
     cur.execute("""SELECT climate_zone,COUNT(DISTINCT station_id)
         FROM dws_station_monthly WHERE year=%s GROUP BY 1""", (year,))
     for zone, cnt in cur.fetchall():
-        cur.execute("INSERT INTO ads_zones VALUES(%s,%s,%s)", (zone, cnt, year))
+        cur.execute("INSERT INTO ads_zones VALUES(%s,%s,%s)", (year, zone, cnt))
 
     db.commit()
     db.close()

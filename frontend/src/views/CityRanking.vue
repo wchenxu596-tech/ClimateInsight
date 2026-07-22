@@ -115,15 +115,15 @@ watch(selectedYear,load,{immediate:true})
 </script>
 
 <style scoped>
-.page-sub { color:var(--ci-text-muted); font-size:12px; margin-bottom:6px }
+.page-sub { color:var(--ci-text-muted); font-size:13px; margin-bottom:6px }
 .ranking-header { display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:8px; flex-shrink:0 }
 .cat-tabs { display:flex; gap:3px; background:var(--ci-surface-container); border-radius:8px; padding:3px }
 .cat-btn { padding:6px 12px; border:none; border-radius:6px; background:transparent; color:var(--ci-text-muted); font-size:13px; font-weight:500; cursor:pointer; transition:all .2s; white-space:nowrap }
 .cat-btn:hover { background:rgb(58 103 79 / 8%) }
 .cat-btn.active { background:var(--ci-primary); color:#fff }
 
-.ranking-body { display:grid; grid-template-columns: minmax(0, 7fr) minmax(240px, 5fr); gap:12px; flex:1; min-height:0; overflow:hidden }
-.table-card { display:flex; flex-direction:column; overflow:hidden; padding:12px }
+.ranking-body { display:grid; grid-template-columns: minmax(0, 7fr) minmax(240px, 5fr); gap:10px; flex:1; min-height:0; overflow:hidden }
+.table-card { display:flex; flex-direction:column; overflow:hidden; padding:10px }
 .table-hd { font-size:14px; font-weight:600; color:var(--ci-primary); margin-bottom:8px; flex-shrink:0 }
 
 @media (max-width: 767px) {

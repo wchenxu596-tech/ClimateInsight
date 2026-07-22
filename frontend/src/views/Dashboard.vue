@@ -105,28 +105,27 @@ watch(selectedYear, load, { immediate: true })
 </script>
 
 <style scoped>
-.kpi-grid { display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:12px; flex-shrink:0; margin-bottom:8px }
-.kpi-card { padding:12px 16px; min-height:90px; display:flex; flex-direction:column; justify-content:center }
-.kpi-label { font-size:11px; font-weight:500; text-transform:uppercase; letter-spacing:0.05em; color:var(--ci-text-muted) }
+.kpi-grid { display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:10px; flex-shrink:0; margin-bottom:8px }
+.kpi-card { padding:10px 14px; min-height:78px; display:flex; flex-direction:column; justify-content:center }
+.kpi-label { font-size:12px; font-weight:500; text-transform:uppercase; letter-spacing:0.05em; color:var(--ci-text-muted) }
 .kpi-value { font-size:24px; font-weight:700; line-height:1.1; margin:2px 0 }
 .kpi-desc { font-size:10px; color:var(--ci-text-muted) }
 
-.charts-row { display:grid; grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); gap:12px; flex:5; min-height:0; overflow:hidden; margin-bottom:8px }
+.charts-row { display:grid; grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); gap:10px; flex:5; min-height:0; overflow:hidden; margin-bottom:8px }
 .charts-row > :deep(*) { display:flex; flex-direction:column; overflow:hidden }
 .charts-row > :deep(.cp-body) { flex:1; min-height:0 }
 
-.chart-last { flex:4; min-height:0; overflow:visible; margin-bottom:4px }
+.chart-last { flex:3; min-height:0; overflow:hidden }
 .chart-last > :deep(*) { display:flex; flex-direction:column; overflow:hidden }
 .chart-last > :deep(.cp-body) { flex:1; min-height:0 }
 
 @media (max-width: 1023px) {
   .kpi-grid { grid-template-columns:repeat(2, minmax(0, 1fr)) }
-  .charts-row { grid-template-columns: 1fr }
-  .flex-chart-last { height:160px }
+  .charts-row { grid-template-columns: 1fr; flex:6 }
+  .chart-last { flex: 4 }
 }
 @media (max-width: 639px) {
   .kpi-grid { grid-template-columns: 1fr }
-  .kpi-card { min-height:70px }
-  .flex-chart-last { height:140px }
+  .kpi-card { min-height:64px }
 }
 </style>
