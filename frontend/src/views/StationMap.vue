@@ -23,7 +23,7 @@
 
         <!-- 图表区 -->
         <GlassCard class="map-chart-card" @wheel.prevent.stop>
-          <v-chart ref="chartRef" :option="chartOption" autoresize style="flex:1;min-height:0" @click="onChartClick" />
+          <v-chart ref="chartRef" :option="chartOption" autoresize style="flex:1;min-height:0" />
         </GlassCard>
 
         <!-- 选中站点浮窗 -->
@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import { ref, inject, watch, reactive, computed, onMounted, onUnmounted, onActivated, onDeactivated } from 'vue'
+import { ref, inject, watch, reactive, computed, onMounted, onUnmounted, onActivated, onDeactivated, nextTick } from 'vue'
 import VChart from 'vue-echarts'
 import { use, registerMap } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -168,11 +168,6 @@ function updateChart() {
 }
 watch([filtered, filterRegion], () => { updateChart(); if (filterRegion.value) applyGeoFocus() }, { deep:true })
 
-function onChartClick(p) {
-  if (!p || p.componentSubType !== 'scatter') return
-  const d = p.data; if (!d || !d.sid) return
-  selected.value = { station_id:d.sid, station_name:d.name, climate_zone:d.zone, avg_temp:d.avgTemp, total_precip:d.precip, risk_events:d.risk }
-}
 function saveMapState() {
   if(!selected.value) return
   sessionStorage.setItem('mapReturnState', JSON.stringify({ selected:selected.value, filterRegion:filterRegion.value, year:selectedYear.value }))
@@ -186,8 +181,10 @@ function restoreMapState() {
   } catch(_){}
 }
 
-// 锁定页面滚动 — 地图区域内滚轮/拖拽不触发页面切换
+// 锁定页面滚动 — 仅地图页活跃时生效
+const activePage = inject('activePage')
 function lockScroll() {
+  if (activePage?.value !== 'map') return
   const el = document.querySelector('.home-root')
   if (el) { el.dataset.prevOverflow = el.style.overflow || ''; el.style.overflow = 'hidden' }
 }
@@ -195,10 +192,25 @@ function unlockScroll() {
   const el = document.querySelector('.home-root')
   if (el) el.style.overflow = el.dataset.prevOverflow || ''
 }
-onMounted(lockScroll)
-onActivated(lockScroll)
-onDeactivated(unlockScroll)
-onUnmounted(unlockScroll)
+let _bound = false
+function bindClick() {
+  if (_bound) return
+  const inst = chartRef.value?.chart || chartRef.value
+  if (!inst || typeof inst.on !== 'function') return
+  _bound = true
+  inst.on('click', (p) => {
+    if (!p || p.componentSubType !== 'scatter') return
+    const d = p.data; if (!d || !d.sid) return
+    selected.value = { station_id:d.sid, station_name:d.name, climate_zone:d.zone, avg_temp:d.avgTemp, total_precip:d.precip, risk_events:d.risk }
+  })
+}
+onMounted(() => {
+  lockScroll()
+  nextTick(() => { setTimeout(bindClick, 500) })
+})
+onActivated(() => { lockScroll(); nextTick(() => { setTimeout(bindClick, 300) }) })
+onDeactivated(() => { unlockScroll(); _bound = false })
+onUnmounted(() => { unlockScroll(); _bound = false })
 
 async function load() {
   const id=++requestId; loading.value=true; error.value=''; empty.value=false
