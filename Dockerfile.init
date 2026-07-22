@@ -1,0 +1,13 @@
+# ClimateInsight 数据初始化镜像
+# 从预处理 CSV 直接写入 MySQL（绕过 Hive 依赖）
+# 使用: docker compose run --rm data-init --year 2024 --csv /data/climate_2024.csv
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+RUN pip install --no-cache-dir pymysql>=1.1 python-dotenv>=1.0 -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+COPY scripts/etl_csv_to_mysql.py scripts/verify_data.py ./
+
+ENTRYPOINT ["python", "etl_csv_to_mysql.py"]
