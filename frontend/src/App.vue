@@ -15,7 +15,7 @@
           </div>
         </div>
         <Transition name="ai-slide">
-          <div v-if="aiOpen" class="ai-panel">
+          <div v-if="aiOpen" class="ai-panel" :style="{ width: panelWidth + 'px' }">
             <AIPanel @close="aiOpen = false" />
           </div>
         </Transition>
@@ -43,6 +43,8 @@ const activePage = ref('dashboard')
 provide('activePage', activePage)
 
 const aiOpen = ref(false)
+const panelWidth = ref(400)
+provide('panelWidth', panelWidth)
 
 function onNavSelect(id) {
   if (id === 'ai') { aiOpen.value = !aiOpen.value; return }

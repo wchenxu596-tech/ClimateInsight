@@ -1,5 +1,5 @@
 <template>
-  <div class="ai-root" :style="{ width: panelWidth + 'px' }">
+  <div class="ai-root">
     <div class="ai-resize-handle" @mousedown="startResize" title="拖动调整宽度"></div>
     <div class="ai-header">
       <span>🌿 AI 分析助手</span>
@@ -42,6 +42,7 @@ import { chartColors, baseTooltip, baseGrid } from '../composables/useDashboardT
 
 defineEmits(['close'])
 const selectedYear = inject('selectedYear', ref(2024))
+const panelWidth = inject('panelWidth')
 const question = ref('')
 const loading = ref(false)
 const msgBox = ref(null)
@@ -49,7 +50,6 @@ const messages = ref([{ role:'assistant', content:'🌿 你好！我是气候智
 const quickQuestions = ['全球平均气温？','最热的5个站点？','各月温度变化？','气候带分布？','2022和2023哪个更热？']
 
 // 面板宽度拖拽
-const panelWidth = ref(400)
 const MIN_W = 400, MAX_W = 500
 let dragging = false, startX = 0, startW = 0
 
@@ -106,14 +106,11 @@ async function send(){
 
 <style scoped>
 .ai-root {
-  position: relative; overflow: hidden;
-  min-width: 400px; height: 100%;
+  position: absolute; inset: 0; overflow: hidden;
   display: flex; flex-direction: column;
   background: var(--ci-glass-strong); backdrop-filter: blur(16px);
   border-radius: 12px;
   box-shadow: -2px 0 16px rgb(0 0 0 / 6%);
-  transition: width .4s ease;
-  margin-left: 16px;
 }
 .ai-resize-handle {
   position: absolute; left: 0; top: 0; bottom: 0; width: 6px;
