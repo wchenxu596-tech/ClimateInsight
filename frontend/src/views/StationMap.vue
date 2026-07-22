@@ -2,29 +2,23 @@
   <div class="page-container">
     <PageState :loading="loading" :error="error" :empty="empty" empty-text="暂无站点数据" @retry="load">
       <div class="map-root">
-        <!-- 第一行：气候带 多选 + 全部显示 -->
+        <!-- 合并行：气候带 + 大洲大洋 -->
         <div class="map-filter-row">
           <span class="row-label">气候带</span>
           <button v-for="z in zoneList" :key="z.key"
             :class="['tag-zone', { active: activeZones.has(z.key) }]"
             :style="activeZones.has(z.key) ? { background: z.color, borderColor: z.color } : { borderColor: z.color, color: z.color }"
             @click="toggleZone(z.key)">
-            <span class="tag-dot" :style="{ background: activeZones.has(z.key) ? '#fff' : z.color }"></span>
-            {{ z.label }}
+            <span class="tag-dot" :style="{ background: activeZones.has(z.key) ? '#fff' : z.color }"></span>{{ z.label }}
           </button>
           <button class="tag-action" @click="selectAllZones">全部显示</button>
-          <span class="map-stat">🌍 {{ total }} 个气象站</span>
-        </div>
-
-        <!-- 第二行：大洲大洋 单选 + 全球视角 -->
-        <div class="map-filter-row">
-          <span class="row-label">大洲大洋</span>
-          <button class="tag-action" @click="clearRegion">🌐 全球视角</button>
+          <span class="row-sep">|</span>
+          <span class="row-label">洲洋</span>
+          <button class="tag-action globe-btn" @click="clearRegion">🌐 全球</button>
           <button v-for="r in regionList" :key="r.key"
             :class="['tag-region', { active: filterRegion === r.key }]"
-            @click="setRegion(r.key)">
-            {{ r.label }}
-          </button>
+            @click="setRegion(r.key)">{{ r.label }}</button>
+          <span class="map-stat">🌍 {{ total }} 站</span>
         </div>
 
         <!-- 图表区 -->
@@ -106,7 +100,7 @@ const regions = {
   south_america:{ label:'南美洲', center:[-60,-15],zoom:3.0, lat:[-56,12], lon:[-82,-34] },
   oceania:     { label:'大洋洲', center:[140,-20],zoom:3.5, lat:[-50,0],  lon:[110,180] },
   antarctica:  { label:'南极洲', center:[0,-80],  zoom:3.5,  lat:[-90,-60],lon:[-180,180] },
-  pacific:     { label:'太平洋', center:[-140,0], zoom:1.8,  lat:[-60,60], lon:[[-180,-70],[100,180]] },
+  pacific:     { label:'太平洋', center:[-150,-5], zoom:1.5,  lat:[-60,60], lon:[[-180,-70],[100,180]] },
   atlantic:    { label:'大西洋', center:[-30,0],  zoom:2.0,  lat:[-60,60], lon:[-70,20] },
   indian:      { label:'印度洋', center:[70,-15], zoom:2.5,  lat:[-60,30], lon:[20,120] },
   arctic:      { label:'北冰洋', center:[0,80],   zoom:3.5,  lat:[66,90],  lon:[-180,180] },
@@ -138,8 +132,8 @@ const filtered = computed(() => {
 
 function applyGeoFocus() {
   const r = filterRegion.value ? regions[filterRegion.value] : null
-  chartOption.geo.center = r ? r.center : [5, 15]
-  chartOption.geo.zoom  = r ? r.zoom  : 1.15
+  chartOption.geo.center = r ? r.center : [8, 5]
+  chartOption.geo.zoom  = r ? r.zoom  : 1.0
 }
 
 const chartOption = reactive({
@@ -151,8 +145,8 @@ const chartOption = reactive({
     }
   },
   geo: {
-    map:'world', roam:true, center:[5,15], zoom:1.15,
-    left:'2%', right:'2%', top:'2%', bottom:'2%',
+    map:'world', roam:true, center:[8,5], zoom:1.0,
+    left:'1%', right:'1%', top:'1%', bottom:'1%',
     itemStyle:{ areaColor:'#ebe4da', borderColor:'#cdc2b2', borderWidth:.5 },
     emphasis:{ itemStyle:{ areaColor:'#e0d6c8' }, label:{ show:false } },
     label:{ show:false },
@@ -221,6 +215,7 @@ watch(selectedYear, load, { immediate:true })
 .map-root { display:flex; flex-direction:column; flex:1; min-height:0; position:relative }
 .map-filter-row { display:flex; align-items:center; gap:6px; flex-wrap:wrap; flex-shrink:0; margin-bottom:8px }
 .row-label { font-size:13px; font-weight:600; color:var(--ci-text); margin-right:4px; white-space:nowrap }
+.row-sep { color:var(--ci-outline-variant); margin:0 2px; font-size:14px }
 
 /* 气候带标签 — 圆角边框 + 色点 */
 .tag-zone {
