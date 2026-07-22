@@ -30,7 +30,7 @@
         <div class="alert-body">
           <GlassCard class="alert-table-card">
             <div class="card-hd">⚠️ 预警站点排名</div>
-            <el-table :data="stations" border stripe size="small" max-height="480" style="width:100%">
+            <div class="table-wrap"><el-table :data="stations" border stripe size="small" max-height="100%" style="width:100%">
               <el-table-column label="风险等级" width="110" align="center">
                 <template #default="{row}">
                   <span :class="['alert-badge', row.alert_level]">{{ row.alert_label }}</span>
@@ -70,7 +70,7 @@
               <el-table-column label="暴雪" width="50" align="center">
                 <template #default="{row}">{{ row.snow }}</template>
               </el-table-column>
-            </el-table>
+            </el-table></div>
           </GlassCard>
 
           <GlassCard class="alert-chart-card">
@@ -162,6 +162,7 @@ watch(selectedYear, load, { immediate: true })
 
 .alert-body { display:grid; grid-template-columns:1fr 1fr; gap:12px; flex:1; min-height:0; overflow:hidden }
 .alert-table-card { display:flex; flex-direction:column; overflow:hidden; padding:0 0 4px }
+.table-wrap { flex:1; min-height:0; overflow:hidden }
 .alert-chart-card { display:flex; flex-direction:column; overflow:hidden; padding:12px }
 
 .card-hd { font-size:18px; font-weight:600; color:var(--ci-primary); padding:10px 14px 6px; flex-shrink:0 }
