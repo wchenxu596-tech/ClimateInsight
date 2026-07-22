@@ -15,7 +15,7 @@ defineEmits(['update:year'])
 
 <style scoped>
 .sidebar {
-  width: 100%; min-width: 0; align-self: stretch;
+  width: 100%; min-width: 0; align-self: center;
   display: flex; flex-direction: column; align-items: center; gap: 4px;
   padding: 10px 4px;
   background: rgb(250 249 247 / 82%); backdrop-filter: blur(20px) saturate(1.4);
@@ -25,8 +25,8 @@ defineEmits(['update:year'])
 .sb-logo { font-size: 20px; line-height: 1; margin-bottom: 4px; flex-shrink: 0; }
 .sb-label { font-size: 8px; font-weight: 500; color: var(--ci-text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; flex-shrink: 0; }
 .sb-scroll {
-  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
-  overflow-y: auto; min-height: 0; width: 100%;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  overflow-y: auto; max-height: 260px; width: 100%;
   scrollbar-width: none;
 }
 .sb-scroll::-webkit-scrollbar { display: none; }

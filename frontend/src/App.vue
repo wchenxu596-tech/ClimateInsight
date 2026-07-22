@@ -4,16 +4,20 @@
       <img v-show="bgLoaded" :src="bgSrc" @load="bgLoaded = true" @error="bgLoaded = false" />
     </div>
     <main class="app-main">
-      <AppSidebar v-model:year="selectedYear" :available-years="availableYears" @select-page="activePage = $event" />
-      <div class="main-content">
-        <AppTopNav />
-        <router-view v-slot="{ Component }">
-          <component :is="Component" :key="$route.path" :active-page="activePage" />
-        </router-view>
+      <AppSidebar v-model:year="selectedYear" :available-years="availableYears" />
+      <div class="center-area">
+        <div class="main-content" :class="{ 'shift-left': aiOpen }">
+          <AppTopNav />
+          <router-view v-slot="{ Component }">
+            <component :is="Component" :key="$route.path" :active-page="activePage" />
+          </router-view>
+        </div>
+        <div class="ai-panel" :class="{ open: aiOpen }">
+          <AIPanel v-if="aiOpen" @close="aiOpen = false" />
+        </div>
       </div>
-      <RightNav :active-page="activePage" @select="activePage = $event" @toggle-ai="agentOpen = !agentOpen" />
+      <RightNav :active-page="activePage" @select="onNavSelect" @toggle-ai="aiOpen = !aiOpen" />
     </main>
-    <BIAgent :visible="agentOpen" @toggle="agentOpen = !agentOpen" />
     <AppFooter />
   </div>
 </template>
@@ -23,9 +27,8 @@ import { ref, provide } from 'vue'
 import AppTopNav from './components/AppTopNav.vue'
 import AppSidebar from './components/AppSidebar.vue'
 import RightNav from './components/RightNav.vue'
-import HomePage from './components/HomePage.vue'
+import AIPanel from './components/AIPanel.vue'
 import AppFooter from './components/AppFooter.vue'
-import BIAgent from './views/BIAgent.vue'
 import bgImage from './assets/images/climate-landscape.webp'
 
 const availableYears = Array.from({length: 16}, (_, i) => 2010 + i)
@@ -35,7 +38,13 @@ provide('selectedYear', selectedYear)
 const activePage = ref('dashboard')
 provide('activePage', activePage)
 
-const agentOpen = ref(false)
+const aiOpen = ref(false)
+
+function onNavSelect(id) {
+  if (id === 'ai') { aiOpen.value = !aiOpen.value; return }
+  aiOpen.value = false
+  activePage.value = id
+}
 
 const bgLoaded = ref(false)
 const bgSrc = bgImage
