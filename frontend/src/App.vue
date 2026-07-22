@@ -12,9 +12,11 @@
             <component :is="Component" :key="$route.path" :active-page="activePage" />
           </router-view>
         </div>
-        <div class="ai-panel" :class="{ open: aiOpen }">
-          <AIPanel v-if="aiOpen" @close="aiOpen = false" />
-        </div>
+        <Transition name="ai-slide">
+          <div v-if="aiOpen" class="ai-panel">
+            <AIPanel @close="aiOpen = false" />
+          </div>
+        </Transition>
       </div>
       <RightNav :active-page="activePage" @select="onNavSelect" @toggle-ai="aiOpen = !aiOpen" />
     </main>

@@ -1,5 +1,6 @@
 <template>
-  <div class="ai-root">
+  <div class="ai-root" :style="{ width: panelWidth + 'px' }">
+    <div class="ai-resize-handle" @mousedown="startResize" title="拖动调整宽度"></div>
     <div class="ai-header">
       <span>🌿 AI 分析助手</span>
       <button class="ai-close" @click="$emit('close')">✕</button>
@@ -32,7 +33,7 @@
 </template>
 
 <script setup>
-import { ref, inject, nextTick, watch } from 'vue'
+import { ref, inject, nextTick, onUnmounted } from 'vue'
 import VChart from 'vue-echarts'
 import { use } from 'echarts/core'; import { CanvasRenderer } from 'echarts/renderers'; import { BarChart, LineChart, PieChart } from 'echarts/charts'; import { GridComponent, TooltipComponent, LegendComponent } from 'echarts/components'
 use([CanvasRenderer, BarChart, LineChart, PieChart, GridComponent, TooltipComponent, LegendComponent])
@@ -46,6 +47,31 @@ const loading = ref(false)
 const msgBox = ref(null)
 const messages = ref([{ role:'assistant', content:'🌿 你好！我是气候智能分析助手。支持：全球均温、月度趋势、站点排名、气候带分布、多年对比。' }])
 const quickQuestions = ['全球平均气温？','最热的5个站点？','各月温度变化？','气候带分布？','2022和2023哪个更热？']
+
+// 面板宽度拖拽
+const panelWidth = ref(280)
+const MIN_W = 280, MAX_W = 560
+let dragging = false, startX = 0, startW = 0
+
+function startResize(e) {
+  dragging = true; startX = e.clientX; startW = panelWidth.value
+  document.addEventListener('mousemove', onDrag)
+  document.addEventListener('mouseup', stopResize)
+  document.body.style.cursor = 'col-resize'; document.body.style.userSelect = 'none'
+}
+function onDrag(e) {
+  if (!dragging) return
+  const dx = startX - e.clientX  // 向左拖 = 增大宽度
+  const w = Math.min(MAX_W, Math.max(MIN_W, startW + dx))
+  panelWidth.value = w
+}
+function stopResize() {
+  dragging = false
+  document.removeEventListener('mousemove', onDrag)
+  document.removeEventListener('mouseup', stopResize)
+  document.body.style.cursor = ''; document.body.style.userSelect = ''
+}
+onUnmounted(stopResize)
 
 function scrollBottom(){ nextTick(()=>{ const el=msgBox.value; if(el) el.scrollTop=el.scrollHeight }) }
 
@@ -80,17 +106,26 @@ async function send(){
 
 <style scoped>
 .ai-root {
-  width: 280px; height: 100%;
+  position: relative;
+  min-width: 280px; height: 100%;
   display: flex; flex-direction: column;
   background: var(--ci-glass-strong); backdrop-filter: blur(16px);
-  border-left: 1px solid rgb(192 201 193 / 30%);
-  border-radius: 12px 0 0 12px;
-  box-shadow: -4px 0 20px rgb(0 0 0 / 6%);
+  border-radius: 12px;
+  box-shadow: -2px 0 16px rgb(0 0 0 / 6%);
+  transition: width .4s ease;
+  margin-left: 16px;
 }
+.ai-resize-handle {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 6px;
+  cursor: col-resize; z-index: 10;
+  background: transparent;
+  transition: background .2s;
+}
+.ai-resize-handle:hover { background: rgb(20 66 45 / 8%); }
 .ai-header {
   display: flex; justify-content: space-between; align-items: center;
   padding: 10px 14px; background: var(--ci-primary); color: #fff;
-  font-size: 14px; font-weight: 600; flex-shrink: 0; border-radius: 12px 0 0 0;
+  font-size: 14px; font-weight: 600; flex-shrink: 0; border-radius: 12px 12px 0 0;
 }
 .ai-close { background: none; border: none; color: #fff; cursor: pointer; font-size: 16px; padding: 2px 6px; border-radius: 4px; }
 .ai-close:hover { background: rgb(255 255 255 / 15%); }
