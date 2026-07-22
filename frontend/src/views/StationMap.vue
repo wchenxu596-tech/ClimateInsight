@@ -145,14 +145,14 @@ const chartOption = reactive({
     }
   },
   geo: {
-    map:'world', roam:true, center:[8,5], zoom:1.0,
+    map:'world', roam:true, silent:true, center:[8,5], zoom:1.0,
     left:'1%', right:'1%', top:'1%', bottom:'1%',
     itemStyle:{ areaColor:'#ebe4da', borderColor:'#cdc2b2', borderWidth:.5 },
     emphasis:{ itemStyle:{ areaColor:'#e0d6c8' }, label:{ show:false } },
     label:{ show:false },
   },
-  series:[{ type:'scatter', coordinateSystem:'geo', symbolSize:5, data:[],
-    emphasis:{ itemStyle:{ borderColor:'#14422d', borderWidth:2 } },
+  series:[{ type:'scatter', coordinateSystem:'geo', symbolSize:8, data:[],
+    silent: false, emphasis:{ itemStyle:{ borderColor:'#14422d', borderWidth:3, shadowBlur:8, shadowColor:'rgb(20 66 45 / 30%)' }, scale:1.8 },
   }],
 })
 
@@ -160,7 +160,7 @@ function updateChart() {
   const data = filtered.value.map(s => ({
     value:[s.lon,s.lat], risk:s.risk_events||0, zone:s.climate_zone,
     name:s.station_name, avgTemp:s.avg_temp, precip:s.total_precip, sid:s.station_id,
-    symbolSize:Math.max(3,Math.min(8,((s.risk_events||0)/10)+3)),
+    symbolSize:Math.max(5,Math.min(12,((s.risk_events||0)/10)+5)),
     itemStyle:{ color:zoneColors[s.climate_zone]||'#999', opacity:.7 },
   }))
   chartOption.series[0].data = data
@@ -169,8 +169,9 @@ function updateChart() {
 watch([filtered, filterRegion], () => { updateChart(); if (filterRegion.value) applyGeoFocus() }, { deep:true })
 
 function onChartClick(p) {
-  const d=p.data; if(!d) return
-  selected.value={ station_id:d.sid, station_name:d.name, climate_zone:d.zone, avg_temp:d.avgTemp, total_precip:d.precip, risk_events:d.risk }
+  if (!p || p.componentSubType !== 'scatter') return
+  const d = p.data; if (!d || !d.sid) return
+  selected.value = { station_id:d.sid, station_name:d.name, climate_zone:d.zone, avg_temp:d.avgTemp, total_precip:d.precip, risk_events:d.risk }
 }
 function saveMapState() {
   if(!selected.value) return
