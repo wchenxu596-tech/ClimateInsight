@@ -30,7 +30,7 @@ const navItems = [
 
 <style scoped>
 .right-nav {
-  width: 100%; min-width: 0; align-self: center;
+  width: 100%; min-width: 0; align-self: stretch;
   display: flex; flex-direction: column; align-items: center; gap: 3px;
   padding: 10px 4px;
   background: rgb(250 249 247 / 82%); backdrop-filter: blur(20px) saturate(1.4);
