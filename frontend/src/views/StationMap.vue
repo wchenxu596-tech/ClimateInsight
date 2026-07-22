@@ -147,7 +147,7 @@ const chartOption = reactive({
     }
   },
   geo: {
-    map:'world', roam:true, silent:true, center:[0,20], zoom:1.5,
+    map:'world', roam:'scale', silent:true, center:[0,20], zoom:1.5,
     left:'2%', right:'2%', top:'2%', bottom:'2%',
     itemStyle:{ areaColor:'#ebe4da', borderColor:'#cdc2b2', borderWidth:.5 },
     emphasis:{ itemStyle:{ areaColor:'#e0d6c8' }, label:{ show:false } },
@@ -171,8 +171,14 @@ function updateChart() {
 watch([filtered, filterRegion], () => { updateChart(); if (filterRegion.value) applyGeoFocus() }, { deep:true })
 
 function onChartClick(p) {
-  const d=p.data; if(!d) return
-  selected.value={ station_id:d.sid, station_name:d.name, climate_zone:d.zone, avg_temp:d.avgTemp, total_precip:d.precip, risk_events:d.risk }
+  // 点击站点 → 弹详情
+  if (p.componentSubType === 'scatter' && p.data?.sid) {
+    const d = p.data
+    selected.value = { station_id:d.sid, station_name:d.name, climate_zone:d.zone, avg_temp:d.avgTemp, total_precip:d.precip, risk_events:d.risk }
+  } else {
+    // 点击地图空白处 → 关闭弹窗
+    selected.value = null
+  }
 }
 function saveMapState() {
   if(!selected.value) return
