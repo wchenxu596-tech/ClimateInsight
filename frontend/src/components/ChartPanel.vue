@@ -21,8 +21,8 @@ defineProps({ title:String, subtitle:String, empty:Boolean, emptyText:String })
 
 <style scoped>
 .cp-root { display:flex; flex-direction:column; overflow:visible }
-.cp-header { display:flex; justify-content:space-between; align-items:flex-start; padding:10px 14px 0; flex-shrink:0 }
-.cp-title { font-size:14px; font-weight:600; color:var(--ci-primary) }
-.cp-subtitle { font-size:11px; color:var(--ci-text-muted); margin-top:2px }
-.cp-body { flex:1; min-height:0; padding:4px 12px 10px; overflow:hidden }
+.cp-header { display:flex; justify-content:space-between; align-items:flex-start; padding:12px 16px 0; flex-shrink:0 }
+.cp-title { font-size:18px; font-weight:600; color:var(--ci-primary) }
+.cp-subtitle { font-size:14px; color:var(--ci-text-muted); margin-top:4px }
+.cp-body { flex:1; min-height:0; padding:6px 14px 12px; overflow:hidden }
 </style>

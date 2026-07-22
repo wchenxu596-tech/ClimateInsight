@@ -106,10 +106,10 @@ watch(selectedYear, load, { immediate: true })
 
 <style scoped>
 .kpi-grid { display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:10px; flex-shrink:0; margin-bottom:8px }
-.kpi-card { padding:10px 14px; min-height:78px; display:flex; flex-direction:column; justify-content:center }
-.kpi-label { font-size:12px; font-weight:500; text-transform:uppercase; letter-spacing:0.05em; color:var(--ci-text-muted) }
-.kpi-value { font-size:24px; font-weight:700; line-height:1.1; margin:2px 0 }
-.kpi-desc { font-size:10px; color:var(--ci-text-muted) }
+.kpi-card { padding:14px 18px; min-height:90px; display:flex; flex-direction:column; justify-content:center }
+.kpi-label { font-size:16px; font-weight:500; text-transform:uppercase; letter-spacing:0.05em; color:var(--ci-text-muted) }
+.kpi-value { font-size:30px; font-weight:700; line-height:1.1; margin:4px 0 }
+.kpi-desc { font-size:13px; color:var(--ci-text-muted) }
 
 .charts-row { display:grid; grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); gap:10px; flex:5; min-height:0; overflow:hidden; margin-bottom:8px }
 .charts-row > :deep(*) { display:flex; flex-direction:column; overflow:hidden }

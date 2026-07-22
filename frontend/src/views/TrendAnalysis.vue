@@ -77,13 +77,13 @@ watch(selectedYear,load,{immediate:true})
 </script>
 
 <style scoped>
-.trend-layout { display:grid; grid-template-columns:200px minmax(0,1fr); gap:12px; flex:1; min-height:0; overflow:hidden }
-.trend-sidebar { display:flex; flex-direction:column; gap:8px; overflow-y:auto }
-.sb-card { padding:10px 12px; flex-shrink:0 }
-.sb-label { font-size:11px; font-weight:500; text-transform:uppercase; letter-spacing:0.05em; color:var(--ci-text-muted); margin-bottom:4px }
-.sb-value { font-size:20px; font-weight:700; color:var(--ci-text) }
+.trend-layout { display:grid; grid-template-columns:230px minmax(0,1fr); gap:14px; flex:1; min-height:0; overflow:hidden }
+.trend-sidebar { display:flex; flex-direction:column; gap:10px; overflow-y:auto }
+.sb-card { padding:14px 16px; flex-shrink:0 }
+.sb-label { font-size:14px; font-weight:500; text-transform:uppercase; letter-spacing:0.05em; color:var(--ci-text-muted); margin-bottom:6px }
+.sb-value { font-size:24px; font-weight:700; color:var(--ci-text) }
 .sb-value.highlight { color:var(--ci-tertiary) }
-.sb-note { font-size:12px; color:var(--ci-text-muted); margin-top:2px }
+.sb-note { font-size:14px; color:var(--ci-text-muted); margin-top:4px }
 
 @media (max-width: 767px) {
   .trend-layout { grid-template-columns:1fr }

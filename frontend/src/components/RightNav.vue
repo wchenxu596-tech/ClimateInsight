@@ -32,13 +32,13 @@ const navItems = [
 .right-nav {
   width: 100%; min-width: 0; align-self: center;
   display: flex; flex-direction: column; align-items: center; gap: 3px;
-  padding: 10px 4px;
+  padding: 12px 6px;
   background: rgb(250 249 247 / 70%); backdrop-filter: blur(20px) saturate(1.4);
   border: 1px solid rgb(255 255 255 / 45%); border-radius: 16px;
   box-shadow: 0 2px 8px rgb(0 0 0 / 5%);
 }
 .rn-item {
-  width: 62px; height: 46px; border: none; border-radius: 10px;
+  width: 64px; height: 52px; border: none; border-radius: 12px;
   background: transparent; color: var(--ci-text-muted);
   cursor: pointer; transition: all .25s;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
@@ -46,11 +46,11 @@ const navItems = [
 }
 .rn-item:hover { background: rgb(58 103 79 / 10%); color: var(--ci-primary); }
 .rn-item.active { background: var(--ci-primary); color: #fff; box-shadow: 0 4px 16px rgb(20 66 45 / 30%); }
-.rn-icon { font-size: 15px; line-height: 1; }
-.rn-label { font-size: 9px; font-weight: 600; line-height: 1; }
-.rn-spacer { flex: 1; min-height: 4px; }
+.rn-icon { font-size: 18px; line-height: 1; }
+.rn-label { font-size: 12px; font-weight: 600; line-height: 1; }
+.rn-spacer { flex: 1; min-height: 6px; }
 .rn-ai-btn {
-  width: 62px; height: 40px; border: none; border-radius: 10px;
+  width: 64px; height: 46px; border: none; border-radius: 12px;
   background: var(--ci-primary-soft); color: var(--ci-primary);
   cursor: pointer; transition: all .25s;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
