@@ -26,7 +26,7 @@ onMounted(() => {
   width: 100%; min-width: 0; align-self: center;
   display: flex; flex-direction: column; align-items: center; gap: 6px;
   padding: 12px 6px;
-  background: rgb(250 249 247 / 70%); backdrop-filter: blur(20px) saturate(1.4);
+  background: rgb(250 249 247 / 40%); backdrop-filter: blur(20px) saturate(1.4);
   border: 1px solid rgb(255 255 255 / 45%); border-radius: 16px;
   box-shadow: 0 2px 8px rgb(0 0 0 / 5%);
 }

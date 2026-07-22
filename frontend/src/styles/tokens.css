@@ -17,8 +17,8 @@
   --ci-text-muted: #414943;
   --ci-outline: #717973;
   --ci-outline-variant: #c0c9c1;
-  --ci-glass: rgb(255 255 255 / 70%);
-  --ci-glass-strong: rgb(250 249 247 / 70%);
+  --ci-glass: rgb(255 255 255 / 40%);
+  --ci-glass-strong: rgb(250 249 247 / 40%);
   --ci-shadow: 0 4px 20px rgb(0 0 0 / 5%);
   --ci-radius-sm: 8px;
   --ci-radius-md: 12px;
