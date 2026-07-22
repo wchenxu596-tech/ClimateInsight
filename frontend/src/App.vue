@@ -6,7 +6,7 @@
     <main class="app-main">
       <AppSidebar v-model:year="selectedYear" :available-years="availableYears" />
       <div class="center-area">
-        <div class="main-content" :class="{ 'shift-left': aiOpen }">
+        <div class="main-content">
           <AppTopNav />
           <router-view v-slot="{ Component }">
             <component :is="Component" :key="$route.path" :active-page="activePage" />
