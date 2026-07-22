@@ -44,7 +44,6 @@ const aiOpen = ref(false)
 
 function onNavSelect(id) {
   if (id === 'ai') { aiOpen.value = !aiOpen.value; return }
-  aiOpen.value = false
   activePage.value = id
 }
 
