@@ -6,7 +6,7 @@ from config import DATA_YEAR
 bp = Blueprint("rankings", __name__)
 
 VALID = {"hottest", "coldest", "rainiest", "most_extreme"}
-VALID_YEARS = {2022, 2023, 2024}
+VALID_YEARS = {2015, 2016, 2017, 2021, 2022, 2023, 2024, 2025}
 
 def _year():
     return request.args.get("year", DATA_YEAR, type=int)

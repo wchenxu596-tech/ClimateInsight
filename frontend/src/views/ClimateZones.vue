@@ -56,9 +56,10 @@ const selectedYear = inject('selectedYear')
 const loading = ref(true); const error = ref(''); const empty = ref(false); const pieHasData = ref(false)
 let requestId = 0
 
-const years = [2022, 2023, 2024]
-const yearNames = { 2022: '2022', 2023: '2023', 2024: '2024' }
-const yearColors = { 2022: '#3a674f', 2023: '#39656b', 2024: '#8b3713' }
+const years = [2015, 2016, 2017, 2021, 2022, 2023, 2024, 2025]
+const yearPalette = ['#3a674f','#39656b','#8b3713','#c78b3c','#bceecf','#bae8ef','#ffdbce','#8a9ba8']
+const yearColors = Object.fromEntries(years.map((y, i) => [y, yearPalette[i]]))
+const yearNames = Object.fromEntries(years.map(y => [y, String(y)]))
 const zoneKeys = ['tropical', 'temperate', 'arid', 'continental', 'polar']
 
 const barOption = reactive({
@@ -133,7 +134,7 @@ async function load() {
   const id = ++requestId; loading.value = true; error.value = ''; empty.value = false
   try {
     const [multiRes, statsRes] = await Promise.all([
-      getZonesMultiYear('2022,2023,2024'),
+      getZonesMultiYear(years.join(',')),
       getZoneStats(selectedYear.value),
     ])
     if (id !== requestId) return

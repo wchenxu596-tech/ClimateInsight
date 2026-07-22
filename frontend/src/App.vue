@@ -33,7 +33,7 @@ import RightNav from './components/RightNav.vue'
 import AIPanel from './components/AIPanel.vue'
 import bgImage from './assets/images/climate-landscape.webp'
 
-const availableYears = Array.from({length: 16}, (_, i) => 2010 + i)
+const availableYears = [2015, 2016, 2017, 2021, 2022, 2023, 2024, 2025]
 const selectedYear = ref(2024)
 provide('selectedYear', selectedYear)
 
