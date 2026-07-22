@@ -49,8 +49,8 @@ const messages = ref([{ role:'assistant', content:'🌿 你好！我是气候智
 const quickQuestions = ['全球平均气温？','最热的5个站点？','各月温度变化？','气候带分布？','2022和2023哪个更热？']
 
 // 面板宽度拖拽
-const panelWidth = ref(280)
-const MIN_W = 280, MAX_W = 560
+const panelWidth = ref(400)
+const MIN_W = 400, MAX_W = 500
 let dragging = false, startX = 0, startW = 0
 
 function startResize(e) {
@@ -107,7 +107,7 @@ async function send(){
 <style scoped>
 .ai-root {
   position: relative;
-  min-width: 280px; height: 100%;
+  min-width: 400px; height: 100%;
   display: flex; flex-direction: column;
   background: var(--ci-glass-strong); backdrop-filter: blur(16px);
   border-radius: 12px;
@@ -130,7 +130,8 @@ async function send(){
 .ai-close { background: none; border: none; color: #fff; cursor: pointer; font-size: 16px; padding: 2px 6px; border-radius: 4px; }
 .ai-close:hover { background: rgb(255 255 255 / 15%); }
 
-.ai-msgs { flex: 1; overflow-y: auto; padding: 10px; background: rgb(250 249 247 / 60%); min-height: 0; }
+.ai-msgs { flex: 1; overflow-y: auto; padding: 10px; background: rgb(250 249 247 / 60%); min-height: 0; scrollbar-width: none; }
+.ai-msgs::-webkit-scrollbar { display: none; }
 .msg { margin-bottom: 6px; display: flex; }
 .msg.user { justify-content: flex-end; }
 .msg.assistant { flex-direction: column; }
