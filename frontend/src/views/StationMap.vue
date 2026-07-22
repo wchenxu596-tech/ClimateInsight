@@ -2,37 +2,29 @@
   <div class="page-container">
     <PageState :loading="loading" :error="error" :empty="empty" empty-text="暂无站点数据" @retry="load">
       <div class="map-root">
-        <!-- 筛选栏 -->
-        <div class="map-filter">
-          <div class="map-stat">🌍 {{ total }} 个气象站</div>
-          <el-input v-model="search" placeholder="搜索站点或地区..." size="small" clearable class="map-search" @input="onSearch" @clear="clearSearch">
-            <template #prefix><span style="font-size:14px">🔍</span></template>
-          </el-input>
-          <div class="filter-legend">
-            <span v-for="z in zoneList" :key="z.key" class="legend-item">
-              <span class="legend-dot" :style="{background:z.color}"></span>{{ z.label }}
-            </span>
-          </div>
-        </div>
+        <!-- 第一行：气候带 多选 + 全部显示 -->
         <div class="map-filter-row">
-          <span class="filter-label">气候带</span>
-          <el-tag v-for="z in zoneList" :key="z.key"
-            :type="filterZone === z.key ? '' : 'info'"
-            :color="filterZone === z.key ? z.color : ''"
-            effect="plain" size="small"
-            class="map-tag"
-            @click="setFilter('zone', z.key)">
+          <span class="row-label">气候带</span>
+          <button v-for="z in zoneList" :key="z.key"
+            :class="['tag-zone', { active: activeZones.has(z.key) }]"
+            :style="activeZones.has(z.key) ? { background: z.color, borderColor: z.color } : { borderColor: z.color, color: z.color }"
+            @click="toggleZone(z.key)">
+            <span class="tag-dot" :style="{ background: activeZones.has(z.key) ? '#fff' : z.color }"></span>
             {{ z.label }}
-          </el-tag>
-          <span class="filter-label" style="margin-left:12px">洲/洋</span>
-          <el-tag v-for="r in regionList" :key="r.key"
-            :type="filterRegion === r.key ? '' : 'info'"
-            :color="filterRegion === r.key ? '#3a674f' : ''"
-            effect="plain" size="small"
-            class="map-tag"
-            @click="setFilter('region', r.key)">
+          </button>
+          <button class="tag-action" @click="selectAllZones">全部显示</button>
+          <span class="map-stat">🌍 {{ total }} 个气象站</span>
+        </div>
+
+        <!-- 第二行：大洲大洋 单选 + 全球视角 -->
+        <div class="map-filter-row">
+          <span class="row-label">大洲大洋</span>
+          <button class="tag-action" @click="clearRegion">🌐 全球视角</button>
+          <button v-for="r in regionList" :key="r.key"
+            :class="['tag-region', { active: filterRegion === r.key }]"
+            @click="setRegion(r.key)">
             {{ r.label }}
-          </el-tag>
+          </button>
         </div>
 
         <!-- 图表区 -->
@@ -40,7 +32,7 @@
           <v-chart ref="chartRef" :option="chartOption" autoresize style="flex:1;min-height:0" @click="onChartClick" />
         </GlassCard>
 
-        <!-- 选中站点详情浮窗 -->
+        <!-- 选中站点浮窗 -->
         <Transition name="fade">
           <GlassCard v-if="selected" class="map-popup">
             <div class="popup-hd">
@@ -84,17 +76,28 @@ const chartRef = ref(null); let requestId = 0
 
 const allStations = ref([])
 const selected = ref(null)
-const filterZone = ref('')
 const filterRegion = ref('')
-const search = ref('')
 const total = ref(0)
 
-// 气候带
+// 气候带多选 — 默认全选
 const zoneCN = { tropical:'热带', temperate:'温带', continental:'大陆性', polar:'寒带', arid:'干旱' }
-const zoneColors = { tropical:'#8b3713', temperate:'#3a674f', continental:'#39656b', polar:'#c0c9c1', arid:'#bdeaf2' }
+const zoneColors = { tropical:'#8b3713', temperate:'#3a674f', continental:'#39656b', polar:'#8a9ba8', arid:'#c78b3c' }
 const zoneList = Object.entries(zoneColors).map(([k, c]) => ({ key: k, label: zoneCN[k], color: c }))
+const activeZones = ref(new Set(zoneList.map(z => z.key)))
 
-// 洲/洋 — 中心坐标 + 缩放 + 近似边界
+function toggleZone(key) {
+  const s = activeZones.value
+  if (s.has(key)) {
+    if (s.size > 1) { const ns = new Set(s); ns.delete(key); activeZones.value = ns }
+  } else {
+    const ns = new Set(s); ns.add(key); activeZones.value = ns
+  }
+}
+function selectAllZones() {
+  activeZones.value = new Set(zoneList.map(z => z.key))
+}
+
+// 大洲大洋 单选
 const regions = {
   asia:        { label:'亚洲',   center:[90, 42], zoom:2.5,  lat:[0,80],   lon:[26,180] },
   africa:      { label:'非洲',   center:[20, 0],  zoom:3.0,  lat:[-35,38], lon:[-18,52] },
@@ -110,168 +113,133 @@ const regions = {
 }
 const regionList = Object.entries(regions).map(([k, v]) => ({ key: k, label: v.label }))
 
-// 判断站点是否在区域内
+function setRegion(key) {
+  filterRegion.value = filterRegion.value === key ? '' : key
+  applyGeoFocus()
+}
+function clearRegion() {
+  filterRegion.value = ''
+  applyGeoFocus()
+}
+
 function inRegion(s, r) {
-  if (!r) return true
   const okLat = s.lat >= r.lat[0] && s.lat <= r.lat[1]
   let okLon = false
-  if (Array.isArray(r.lon[0])) {
-    // 多段经度（如太平洋）
-    okLon = r.lon.some(seg => s.lon >= seg[0] && s.lon <= seg[1])
-  } else {
-    okLon = s.lon >= r.lon[0] && s.lon <= r.lon[1]
-  }
+  if (Array.isArray(r.lon[0])) okLon = r.lon.some(seg => s.lon >= seg[0] && s.lon <= seg[1])
+  else okLon = s.lon >= r.lon[0] && s.lon <= r.lon[1]
   return okLat && okLon
 }
 
 const filtered = computed(() => {
-  let arr = allStations.value
-  if (filterZone.value) arr = arr.filter(s => s.climate_zone === filterZone.value)
+  let arr = allStations.value.filter(s => activeZones.value.has(s.climate_zone))
   if (filterRegion.value) arr = arr.filter(s => inRegion(s, regions[filterRegion.value]))
-  if (search.value.trim()) {
-    const q = search.value.trim().toLowerCase()
-    arr = arr.filter(s => (s.station_name || '').toLowerCase().includes(q))
-  }
   return arr
 })
 
-// 设置筛选
-function setFilter(type, key) {
-  if (type === 'zone') {
-    filterZone.value = filterZone.value === key ? '' : key
-  } else {
-    filterRegion.value = filterRegion.value === key ? '' : key
-  }
-  applyGeoFocus()
-}
-function onSearch() { applyGeoFocus() }
-function clearSearch() { search.value = ''; applyGeoFocus() }
-
 function applyGeoFocus() {
   const r = filterRegion.value ? regions[filterRegion.value] : null
-  if (r) {
-    chartOption.geo.center = r.center
-    chartOption.geo.zoom = r.zoom
-  } else {
-    chartOption.geo.center = [0, 20]
-    chartOption.geo.zoom = 1.5
-  }
-  // 如果搜索到单个站点，聚焦该站点
-  if (search.value.trim() && !filterRegion.value) {
-    const match = allStations.value.find(s =>
-      (s.station_name || '').toLowerCase().includes(search.value.trim().toLowerCase())
-    )
-    if (match) {
-      chartOption.geo.center = [match.lon, match.lat]
-      chartOption.geo.zoom = 5
-    }
-  }
+  chartOption.geo.center = r ? r.center : [0, 20]
+  chartOption.geo.zoom  = r ? r.zoom  : 1.5
 }
 
 const chartOption = reactive({
   tooltip: {
     ...baseTooltip(),
     formatter: (p) => {
-      const d = p.data
-      if (!d) return ''
-      return `<strong>${d.name || '未知'}</strong><br/>
-              气温: ${d.avgTemp ?? '--'}°C &nbsp; 降水: ${d.precip ?? '--'}mm<br/>
-              气候带: ${zoneCN[d.zone] || d.zone || '--'}`
+      const d = p.data; if (!d) return ''
+      return `<strong>${d.name||'未知'}</strong><br/>气温: ${d.avgTemp??'--'}°C &nbsp; 降水: ${d.precip??'--'}mm<br/>气候带: ${zoneCN[d.zone]||d.zone||'--'}`
     }
   },
   geo: {
-    map: 'world',
-    roam: true,
-    center: [0, 20],
-    zoom: 1.5,
-    left: '2%', right: '2%', top: '2%', bottom: '2%',
-    itemStyle: { areaColor: '#ebe4da', borderColor: '#cdc2b2', borderWidth: 0.5 },
-    emphasis: { itemStyle: { areaColor: '#e0d6c8' }, label: { show: false } },
-    label: { show: false },
+    map:'world', roam:true, center:[0,20], zoom:1.5,
+    left:'2%', right:'2%', top:'2%', bottom:'2%',
+    itemStyle:{ areaColor:'#ebe4da', borderColor:'#cdc2b2', borderWidth:.5 },
+    emphasis:{ itemStyle:{ areaColor:'#e0d6c8' }, label:{ show:false } },
+    label:{ show:false },
   },
-  series: [{
-    type: 'scatter', coordinateSystem: 'geo',
-    symbolSize: 5, data: [],
-    emphasis: { itemStyle: { borderColor: '#14422d', borderWidth: 2 } },
+  series:[{ type:'scatter', coordinateSystem:'geo', symbolSize:5, data:[],
+    emphasis:{ itemStyle:{ borderColor:'#14422d', borderWidth:2 } },
   }],
 })
 
 function updateChart() {
   const data = filtered.value.map(s => ({
-    value: [s.lon, s.lat],
-    risk: s.risk_events || 0, zone: s.climate_zone,
-    name: s.station_name, avgTemp: s.avg_temp,
-    precip: s.total_precip, sid: s.station_id,
-    symbolSize: Math.max(3, Math.min(8, ((s.risk_events||0) / 10) + 3)),
-    itemStyle: { color: zoneColors[s.climate_zone] || '#999', opacity: 0.7 },
+    value:[s.lon,s.lat], risk:s.risk_events||0, zone:s.climate_zone,
+    name:s.station_name, avgTemp:s.avg_temp, precip:s.total_precip, sid:s.station_id,
+    symbolSize:Math.max(3,Math.min(8,((s.risk_events||0)/10)+3)),
+    itemStyle:{ color:zoneColors[s.climate_zone]||'#999', opacity:.7 },
   }))
   chartOption.series[0].data = data
   total.value = data.length
 }
-watch(filtered, updateChart, { deep: true })
+watch([filtered, filterRegion], () => { updateChart(); if (filterRegion.value) applyGeoFocus() }, { deep:true })
 
-function onChartClick(params) {
-  const d = params.data
-  if (!d) return
-  selected.value = {
-    station_id: d.sid, station_name: d.name,
-    climate_zone: d.zone, avg_temp: d.avgTemp,
-    total_precip: d.precip, risk_events: d.risk,
-  }
+function onChartClick(p) {
+  const d=p.data; if(!d) return
+  selected.value={ station_id:d.sid, station_name:d.name, climate_zone:d.zone, avg_temp:d.avgTemp, total_precip:d.precip, risk_events:d.risk }
 }
-
 function saveMapState() {
-  if (!selected.value) return
-  sessionStorage.setItem('mapReturnState', JSON.stringify({
-    selected: selected.value, filterZone: filterZone.value,
-    filterRegion: filterRegion.value, year: selectedYear.value,
-  }))
+  if(!selected.value) return
+  sessionStorage.setItem('mapReturnState', JSON.stringify({ selected:selected.value, filterRegion:filterRegion.value, year:selectedYear.value }))
 }
 function restoreMapState() {
-  const saved = sessionStorage.getItem('mapReturnState')
-  if (!saved) return
-  sessionStorage.removeItem('mapReturnState')
+  const s=sessionStorage.getItem('mapReturnState'); if(!s) return; sessionStorage.removeItem('mapReturnState')
   try {
-    const st = JSON.parse(saved)
-    if (!st.selected || st.year !== selectedYear.value) return
-    const match = allStations.value.find(s => s.station_id === st.selected.station_id)
-    if (match) {
-      selected.value = st.selected
-      filterZone.value = st.filterZone || ''
-      filterRegion.value = st.filterRegion || ''
-      applyGeoFocus()
-    }
-  } catch (_) {}
+    const st=JSON.parse(s); if(!st.selected||st.year!==selectedYear.value) return
+    const m=allStations.value.find(x=>x.station_id===st.selected.station_id)
+    if(m){ selected.value=st.selected; filterRegion.value=st.filterRegion||''; applyGeoFocus() }
+  } catch(_){}
 }
 
 async function load() {
-  const id = ++requestId; loading.value = true; error.value = ''; empty.value = false
-  try {
-    const res = await getStations(selectedYear.value)
-    if (id !== requestId) return
-    const data = res.data?.data
-    if (!data?.length) { empty.value = true; loading.value = false; return }
-    allStations.value = data
-    updateChart()
-    restoreMapState()
-  } catch (e) {
-    if (id === requestId) { error.value = '站点数据加载失败'; console.error(e) }
-  } finally { if (id === requestId) loading.value = false }
+  const id=++requestId; loading.value=true; error.value=''; empty.value=false
+  try{
+    const res=await getStations(selectedYear.value); if(id!==requestId) return
+    const d=res.data?.data; if(!d?.length){ empty.value=true; loading.value=false; return }
+    allStations.value=d; updateChart(); restoreMapState()
+  }catch(e){ if(id===requestId){ error.value='数据加载失败'; console.error(e) } }
+  finally{ if(id===requestId) loading.value=false }
 }
-watch(selectedYear, load, { immediate: true })
+watch(selectedYear, load, { immediate:true })
 </script>
 
 <style scoped>
 .map-root { display:flex; flex-direction:column; flex:1; min-height:0; position:relative }
-.map-filter { display:flex; align-items:center; gap:12px; flex-wrap:wrap; flex-shrink:0; margin-bottom:6px }
-.map-stat { font-size:18px; font-weight:600; color:var(--ci-primary); white-space:nowrap }
-.map-search { width:220px; flex-shrink:0 }
-.map-filter-row { display:flex; align-items:center; gap:4px; flex-wrap:wrap; flex-shrink:0; margin-bottom:8px }
-.filter-label { font-size:13px; font-weight:500; color:var(--ci-text-muted); margin-right:4px }
-.filter-legend { display:flex; gap:12px; flex-wrap:wrap; margin-left:auto }
-.legend-item { display:flex; align-items:center; gap:6px; font-size:14px; color:var(--ci-text-muted) }
-.legend-dot { width:12px; height:12px; border-radius:50%; display:inline-block }
-.map-tag { cursor:pointer; border:none; color:#fff }
+.map-filter-row { display:flex; align-items:center; gap:6px; flex-wrap:wrap; flex-shrink:0; margin-bottom:8px }
+.row-label { font-size:13px; font-weight:600; color:var(--ci-text); margin-right:4px; white-space:nowrap }
+
+/* 气候带标签 — 圆角边框 + 色点 */
+.tag-zone {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:3px 10px; border-radius:14px; border:1.5px solid;
+  background:transparent; font-size:13px; font-weight:500;
+  cursor:pointer; transition:all .2s; white-space:nowrap;
+  font-family:inherit; line-height:1.4;
+}
+.tag-zone.active { color:#fff; }
+.tag-zone:not(.active) { background:rgb(255 255 255 / 60%); }
+.tag-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.tag-zone:hover { opacity:.85; }
+
+/* 大洲大洋标签 — 实心矩形 */
+.tag-region {
+  display:inline-block; padding:4px 12px; border-radius:6px; border:none;
+  background:var(--ci-surface-container); color:var(--ci-text-muted);
+  font-size:13px; font-weight:500; cursor:pointer; transition:all .2s;
+  white-space:nowrap; font-family:inherit; line-height:1.4;
+}
+.tag-region:hover { background:rgb(58 103 79 / 15%); color:var(--ci-primary); }
+.tag-region.active { background:var(--ci-secondary); color:#fff; }
+
+/* 操作按钮 */
+.tag-action {
+  display:inline-block; padding:4px 10px; border-radius:6px; border:1px dashed var(--ci-outline);
+  background:transparent; color:var(--ci-text-muted); font-size:12px; font-weight:500;
+  cursor:pointer; transition:all .2s; white-space:nowrap; font-family:inherit;
+}
+.tag-action:hover { border-color:var(--ci-primary); color:var(--ci-primary); background:rgb(58 103 79 / 5%); }
+
+.map-stat { font-size:15px; font-weight:600; color:var(--ci-primary); margin-left:auto; white-space:nowrap }
 
 .map-chart-card { flex:1; min-height:0; display:flex; flex-direction:column; overflow:hidden; padding:12px }
 
@@ -286,12 +254,11 @@ watch(selectedYear, load, { immediate: true })
 .popup-link { display:block; margin-top:10px; text-align:center; color:var(--ci-primary); font-weight:600; font-size:15px; text-decoration:none; padding:8px; border-radius:8px; background:var(--ci-primary-soft) }
 .popup-link:hover { background:var(--ci-primary); color:#fff }
 
-.fade-enter-active, .fade-leave-active { transition:all .25s ease }
-.fade-enter-from, .fade-leave-to { opacity:0; transform:translateY(10px) }
+.fade-enter-active,.fade-leave-active { transition:all .25s ease }
+.fade-enter-from,.fade-leave-to { opacity:0; transform:translateY(10px) }
 
-@media (max-width: 900px) {
-  .map-filter { flex-direction:column; align-items:flex-start }
-  .map-search { width:100% }
-  .filter-legend { margin-left:0 }
+@media (max-width:900px) {
+  .map-stat { margin-left:0; width:100% }
+  .map-filter-row { gap:4px }
 }
 </style>
