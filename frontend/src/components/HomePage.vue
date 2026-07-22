@@ -60,14 +60,15 @@ defineExpose({ scrollToPage })
 
 <style scoped>
 .home-root {
-  height: 100%; overflow-y: scroll; overflow-x: hidden;
+  position: absolute; inset: 0;
+  overflow-y: scroll; overflow-x: hidden;
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
   scrollbar-width: none;
 }
 .home-root::-webkit-scrollbar { display: none; }
 .snap-section {
-  min-height: 100%; scroll-snap-align: start;
+  height: 100%; scroll-snap-align: start;
   display: flex; flex-direction: column;
 }
 </style>
