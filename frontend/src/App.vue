@@ -44,8 +44,8 @@ import AIPanel from './components/AIPanel.vue'
 // 主题色系：绿 → 青蓝 → 暖橙
 const bgColors = ['#bceecf', '#bae8ef', '#ffdbce']
 
-const availableYears = [2015, 2016, 2017, 2021, 2022, 2023, 2024, 2025]
-const selectedYear = ref(2024)
+const availableYears = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
+const selectedYear = ref(2025)
 provide('selectedYear', selectedYear)
 
 const activePage = ref('map')

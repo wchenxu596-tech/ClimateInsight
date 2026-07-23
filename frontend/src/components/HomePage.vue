@@ -19,14 +19,14 @@ import AlertDashboard from '../views/AlertDashboard.vue'
 
 const activePage = inject('activePage')
 const homeRoot = ref(null)
-let ignoreScroll = false
+const scrollTarget = ref(null) // 导航点击目标，精确追踪避免中途 snap 干扰
 
 const sections = [
   { id: 'map', comp: StationMap },
   { id: 'dashboard', comp: Dashboard },
   { id: 'trend', comp: TrendAnalysis },
-  { id: 'ranking', comp: CityRanking },
   { id: 'zones', comp: ClimateZones },
+  { id: 'ranking', comp: CityRanking },
   { id: 'alert', comp: AlertDashboard },
 ]
 const idxMap = Object.fromEntries(sections.map((s, i) => [s.id, i]))
@@ -37,9 +37,27 @@ function isAdjacent(id) {
 }
 
 function onScroll() {
-  if (ignoreScroll) return
   const el = homeRoot.value
   if (!el) return
+  // 导航点击导致的滚动：抑制中途 snap 检测，等目标到位
+  if (scrollTarget.value) {
+    const targetEl = document.getElementById('sec-' + scrollTarget.value)
+    if (targetEl) {
+      const rect = targetEl.getBoundingClientRect()
+      const containerTop = el.getBoundingClientRect().top
+      if (Math.abs(rect.top - containerTop) < 8) {
+        // 目标到位，切换 activePage
+        if (activePage.value !== scrollTarget.value) {
+          activePage.value = scrollTarget.value
+        }
+        scrollTarget.value = null
+      }
+    } else {
+      scrollTarget.value = null
+    }
+    return
+  }
+  // 手动滚轮/触控：正常 snap 检测
   const top = el.scrollTop
   const h = el.clientHeight
   const idx = Math.round(top / h)
@@ -52,14 +70,13 @@ function onScroll() {
 function scrollToPage(id) {
   const el = document.getElementById('sec-' + id)
   if (!el) return
-  ignoreScroll = true
+  scrollTarget.value = id
   el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  setTimeout(() => { ignoreScroll = false }, 600)
 }
 
 // 监听右侧导航点击 → 滚动到对应 section
 watch(() => activePage.value, (newId) => {
-  if (ignoreScroll) return
+  if (scrollTarget.value) return
   scrollToPage(newId)
 })
 

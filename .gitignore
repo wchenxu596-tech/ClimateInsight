@@ -15,9 +15,12 @@ dist/
 .vscode/
 
 # Data files (large)
+data/raw/
+data/processed/
 data/*.csv
 data/*.tar
 data/*.tar.gz
+*.gz
 data/gsod_*/
 
 # Env

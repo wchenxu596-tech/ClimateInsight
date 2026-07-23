@@ -7,7 +7,7 @@ from cache import cached
 bp = Blueprint("rankings", __name__)
 
 VALID = {"hottest", "coldest", "rainiest", "most_extreme"}
-VALID_YEARS = {2015, 2016, 2017, 2021, 2022, 2023, 2024, 2025}
+VALID_YEARS = {2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025}
 
 def _year():
     return request.args.get("year", DATA_YEAR, type=int)
@@ -71,11 +71,9 @@ def api_zones_multi_year():
 def api_zones_stats():
     y = _year()
     rows = query_dict(
-        "SELECT climate_zone, COUNT(DISTINCT station_id) as station_count, "
-        "ROUND(AVG(avg_temp), 1) as avg_temp, ROUND(AVG(total_precip), 1) as avg_precip, "
-        "SUM(extreme_days) as extreme_days, SUM(heat_wave_days) as heat_wave_days, "
-        "SUM(cold_wave_days) as cold_wave_days "
-        "FROM dws_station_monthly WHERE year=%s GROUP BY climate_zone",
+        "SELECT climate_zone, station_count, avg_temp, avg_precip, "
+        "extreme_days, heat_wave_days, cold_wave_days "
+        "FROM ads_zone_trends WHERE data_year=%s",
         (y,),
     )
     return jsonify({"code": 0, "message": "ok", "data": rows, "meta": {"data_year": y}})
@@ -106,14 +104,9 @@ def api_zones_trend():
     if not years:
         years = [2024]
     rows = query_dict(
-        "SELECT year, climate_zone, "
-        "ROUND(AVG(avg_temp), 1) as avg_temp, "
-        "ROUND(AVG(total_precip), 1) as avg_precip, "
-        "SUM(extreme_days) as extreme_days, "
-        "SUM(heat_wave_days) as heat_wave_days, "
-        "SUM(cold_wave_days) as cold_wave_days, "
-        "COUNT(DISTINCT station_id) as station_count "
-        "FROM dws_station_monthly WHERE year IN ({}) GROUP BY year, climate_zone ORDER BY year, climate_zone"
+        "SELECT data_year as year, climate_zone, avg_temp, avg_precip, "
+        "extreme_days, heat_wave_days, cold_wave_days, station_count "
+        "FROM ads_zone_trends WHERE data_year IN ({}) ORDER BY data_year, climate_zone"
         .format(",".join(["%s"] * len(years))),
         tuple(years),
     )

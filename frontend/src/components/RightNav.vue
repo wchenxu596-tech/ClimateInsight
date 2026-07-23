@@ -22,8 +22,8 @@ const navItems = [
   { id: 'map', icon: '🗺️', label: '地图' },
   { id: 'dashboard', icon: '📊', label: '总览' },
   { id: 'trend', icon: '📈', label: '趋势' },
-  { id: 'ranking', icon: '🏆', label: '排名' },
   { id: 'zones', icon: '🌍', label: '气候带' },
+  { id: 'ranking', icon: '🏆', label: '排名' },
   { id: 'alert', icon: '⚠️', label: '预警' },
 ]
 </script>

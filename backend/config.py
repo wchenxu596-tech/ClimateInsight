@@ -12,7 +12,7 @@ MYSQL_PASSWORD = os.environ["MYSQL_PASSWORD"]  # 必须提供，无默认值
 API_PORT = int(os.getenv("API_PORT", "5000"))
 FLASK_DEBUG = os.getenv("FLASK_DEBUG", "false").lower() == "true"
 CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:8080,http://localhost:5173").split(",")
-DATA_YEAR = 2024
+DATA_YEAR = 2025
 
 HIVE_CONTAINER = os.getenv("HIVE_CONTAINER", "hive-server")
 HIVE_JDBC_URL = os.getenv("HIVE_JDBC_URL", "jdbc:hive2://hive-server:10000")

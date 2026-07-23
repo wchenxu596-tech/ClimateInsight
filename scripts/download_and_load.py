@@ -305,9 +305,28 @@ def load_to_mysql(csv_path: Path, year: int):
     for zone, cnt in cur.fetchall():
         cur.execute("INSERT INTO ads_zones VALUES(%s,%s,%s)", (year, zone, cnt))
 
+    # 气候带趋势 ADS 表（加速趋势/气候带页面）
+    cur.execute("DELETE FROM ads_zone_trends WHERE data_year=%s", (year,))
+    cur.execute("""SELECT climate_zone,ROUND(AVG(avg_temp),1),ROUND(AVG(total_precip),1),
+        SUM(extreme_days),SUM(heat_wave_days),SUM(cold_wave_days),COUNT(DISTINCT station_id)
+        FROM dws_station_monthly WHERE year=%s GROUP BY climate_zone""", (year,))
+    for row in cur.fetchall():
+        cur.execute("INSERT INTO ads_zone_trends VALUES(%s,%s,%s,%s,%s,%s,%s,%s)",
+                    (year, row[0], row[1], row[2], row[3], row[4], row[5], row[6]))
+
+    # 站点概要 ADS 表（加速地图/预警页面）
+    cur.execute("DELETE FROM ads_stations WHERE data_year=%s", (year,))
+    cur.execute("""SELECT station_id,MAX(station_name),ROUND(AVG(latitude),4),ROUND(AVG(longitude),4),
+        MAX(climate_zone),ROUND(AVG(avg_temp),1),ROUND(SUM(total_precip),1),
+        SUM(heat_wave_days+cold_wave_days+extreme_days)
+        FROM dws_station_monthly WHERE year=%s GROUP BY station_id""", (year,))
+    for row in cur.fetchall():
+        cur.execute("INSERT INTO ads_stations VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+                    (year, row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]))
+
     db.commit()
     db.close()
-    print(f"[MySQL] {year} 年数据写入完成 ✅")
+    print(f"[MySQL] {year} done")
 
 
 # ═══════════════════════════════════════════
@@ -375,7 +394,7 @@ def main():
     load_to_mysql(csv_path, year)
 
     print(f"\n{'='*50}")
-    print(f"✅ {year} 年数据加载完成！")
+    print(f"[OK] {year} done")
     print(f"   http://localhost:8080")
     print(f"{'='*50}")
 

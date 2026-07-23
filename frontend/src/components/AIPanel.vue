@@ -22,7 +22,7 @@
     </div>
 
     <div class="ai-input">
-      <el-input v-model="question" placeholder="输入问题..." size="small" :disabled="loading" maxlength="300" @keyup.enter="send" />
+      <el-input v-model="question" placeholder="输入问题..." size="small" :disabled="loading" maxlength="500" @keyup.enter="send" />
       <el-button type="primary" size="small" :loading="loading" @click="send">发送</el-button>
     </div>
 
@@ -33,7 +33,7 @@
 </template>
 
 <script setup>
-import { ref, inject, nextTick, onUnmounted } from 'vue'
+import { ref, inject, computed, nextTick, onUnmounted } from 'vue'
 import VChart from 'vue-echarts'
 import { use } from 'echarts/core'; import { CanvasRenderer } from 'echarts/renderers'; import { BarChart, LineChart, PieChart } from 'echarts/charts'; import { GridComponent, TooltipComponent, LegendComponent } from 'echarts/components'
 use([CanvasRenderer, BarChart, LineChart, PieChart, GridComponent, TooltipComponent, LegendComponent])
@@ -42,12 +42,33 @@ import { chartColors, baseTooltip, baseGrid } from '../composables/useDashboardT
 
 defineEmits(['close'])
 const selectedYear = inject('selectedYear', ref(2024))
+const activePage = inject('activePage', ref('dashboard'))
 const panelWidth = inject('panelWidth')
 const question = ref('')
 const loading = ref(false)
 const msgBox = ref(null)
-const messages = ref([{ role:'assistant', content:'🌿 你好！我是气候智能分析助手。支持：全球均温、月度趋势、站点排名、气候带分布、多年对比。' }])
-const quickQuestions = ['全球平均气温？','最热的5个站点？','各月温度变化？','气候带分布？','2022和2023哪个更热？']
+const messages = ref([{ role:'assistant', content:'🌿 你好！我是气候智能分析助手。\n\n📊 数据查询：全球均温、月度趋势、站点排名、气候带分布\n📈 趋势分析：多年变暖趋势、季节分析、气候带演变\n📋 页面分析：我可以解读你正在浏览的当前页面\n\n直接输入问题，或点击下方快捷提问开始 👇' }])
+
+// 根据当前页面动态切换快捷提问
+const quickQuestions = computed(() => {
+  const y = selectedYear.value
+  const base = [
+    `${y}年全球平均气温？`,
+    `这些年变暖了多少？`,
+    `最热的5个站点？`,
+    `气候带分布？`,
+    `分析当前页面`,
+  ]
+  const pageQs = {
+    map: [`${y}年站点分布概况`, `哪个气候带站点最多？`],
+    dashboard: [`${y}年最热的是哪里？`, `各月温度变化？`],
+    trend: [`哪个季节最热？`, `${y}年温度趋势如何？`, `这些年温度上升了多少？`],
+    ranking: [`${y}年降水最多的地方？`, `${y}年最冷的站点？`, `极端天气最多的站点？`],
+    zones: [`气候带温度变化趋势？`, `哪个气候带升温最快？`, `极端事件增加了吗？`],
+    alert: [`极端事件变化趋势`, `哪个气候带极端事件最多？`],
+  }
+  return pageQs[activePage.value] || base
+})
 
 // 面板宽度拖拽
 const MIN_W = 400, MAX_W = 500
@@ -92,7 +113,7 @@ async function send(){
   messages.value.push({ role:'user', content:q })
   question.value=''; loading.value=true; scrollBottom()
   try{
-    const res=await askAgent(q, selectedYear.value)
+    const res=await askAgent(q, selectedYear.value, activePage.value)
     const d=res.data?.data||{}
     const msg={ role:'assistant', content: d.answer||'查询完成' }
     if(d.table){ msg.table=d.table; msg.table.rows=tableRows(d.table) }

@@ -54,8 +54,8 @@ export const getRanking = (year, category = 'hottest', limit = 15) =>
 export const getMonthly = (year) => cachedGet('/monthly', { params: { year } })
 export const getZones = (year) => cachedGet('/zones', { params: { year } })
 export const getHealth = () => api.get('/health')
-export const askAgent = (question, year = 2024) =>
-  api.post('/agent/query', { question, year })
+export const askAgent = (question, year = 2024, page = '') =>
+  api.post('/agent/query', { question, year, page })
 
 // ── 数据 API ──
 export const getAlertRisk = (year, limit = 100) =>

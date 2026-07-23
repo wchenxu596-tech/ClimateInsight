@@ -117,20 +117,14 @@ def api_alert_monthly():
 @bp.route("/api/stations")
 @cached(300)
 def api_stations():
-    """全球气象站概要（用于地图散点）"""
+    """全球气象站概要（用于地图散点）— 使用ADS预聚合表"""
     y = _year()
 
     rows = query_dict("""
-        SELECT station_id, station_name,
-               ROUND(latitude, 4)  AS lat,
-               ROUND(longitude, 4) AS lon,
-               climate_zone,
-               ROUND(AVG(avg_temp), 1)         AS avg_temp,
-               ROUND(SUM(total_precip), 1)      AS total_precip,
-               SUM(heat_wave_days + cold_wave_days + extreme_days) AS risk_events
-        FROM dws_station_monthly
-        WHERE year = %s
-        GROUP BY station_id, station_name, latitude, longitude, climate_zone
+        SELECT station_id, station_name, lat, lon, climate_zone,
+               avg_temp, total_precip, risk_events
+        FROM ads_stations
+        WHERE data_year = %s
     """, (y,))
 
     return jsonify({

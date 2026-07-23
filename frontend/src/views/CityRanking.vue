@@ -57,7 +57,7 @@ function buildOption(rows, cat) {
     const ratio = Number.isFinite(v) ? (v - vmin) / range : 0.5
     const t = Math.max(0, Math.min(1, ratio))
     let color
-    if (cat === 'hottest')        color = hex(lerp(0xff,0x8b,t), lerp(0xdb,0x37,t), lerp(0xce,0x13,t))
+    if (cat === 'hottest')        color = hex(lerp(0xf4,0xba,t), lerp(0xb8,0x1a,t), lerp(0xb8,0x1a,t))
     else if (cat === 'coldest')    color = hex(lerp(0x1e,0xbb,t), lerp(0x88,0xde,t), lerp(0xe5,0xfb,t))
     else if (cat === 'rainiest')   color = hex(lerp(0xba,0x39,t), lerp(0xe8,0x65,t), lerp(0xef,0x6b,t))
     else                           color = hex(lerp(0xff,0x8b,t), lerp(0xdb,0x37,t), lerp(0xce,0x13,t))
@@ -86,7 +86,7 @@ function buildOption(rows, cat) {
       itemStyle: {
         borderRadius: isColdest ? [0, 0, 6, 6] : [6, 6, 0, 0],
         color: !isColdest ? { type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
-          colorStops: cat === 'hottest' ? [{ offset: 0, color: '#ffdbce' }, { offset: 1, color: chartColors.orange }]
+          colorStops: cat === 'hottest' ? [{ offset: 0, color: '#f4b8b8' }, { offset: 1, color: '#ba1a1a' }]
             : cat === 'rainiest' ? [{ offset: 0, color: '#bae8ef' }, { offset: 1, color: chartColors.green }]
             : [{ offset: 0, color: chartColors.tertiarySoft || '#ffdbce' }, { offset: 1, color: chartColors.tertiary }]
         } : undefined

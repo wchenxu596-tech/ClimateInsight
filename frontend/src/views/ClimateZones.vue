@@ -110,16 +110,19 @@ import { chartColors, zoneColors, zoneCN } from '../composables/useDashboardThem
 
 const selectedYear = inject('selectedYear')
 
-const ALL_YEARS = [2015, 2016, 2017, 2021, 2022, 2023, 2024, 2025]
-const YEAR_PALETTE = ['#3a674f', '#39656b', '#8b3713', '#c78b3c', '#009f7f', '#5da9b4', '#e08050', '#7a8b9a']
+const ALL_YEARS = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
+const YEAR_PALETTE = ['#3a674f', '#39656b', '#8b3713', '#c78b3c', '#009f7f', '#5da9b4', '#e08050', '#7a8b9a', '#bceecf', '#bae8ef', '#ffdbce']
 const yearColors = Object.fromEntries(ALL_YEARS.map((y, i) => [y, YEAR_PALETTE[i]]))
 const zoneKeys = ['tropical', 'temperate', 'arid', 'continental', 'polar']
 
-const activeYears = computed(() => ALL_YEARS.filter(y => y <= selectedYear.value))
+const activeYears = computed(() => {
+  const eligible = ALL_YEARS.filter(y => y <= selectedYear.value)
+  return eligible.slice(-5)
+})
 const firstYear = computed(() => activeYears.value[0] || selectedYear.value)
 const yearCountText = computed(() => {
   const n = activeYears.value.length
-  const map = { 1: '一年', 2: '两年', 3: '三年', 4: '四年', 5: '五年', 6: '六年', 7: '七年', 8: '八年' }
+  const map = { 1: '一年', 2: '两年', 3: '三年', 4: '四年', 5: '五年' }
   return map[n] || n + '年'
 })
 
