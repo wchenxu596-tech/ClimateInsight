@@ -86,7 +86,7 @@ cp .env.example .env
 docker compose up -d
 ```
 
-启动后访问 **http://localhost:8080**。
+启动后访问 http://localhost:8080
 
 > **注意**：Docker 镜像包含预置的 2015–2025 年数据。如需重新导入或添加新数据，参考 [完整部署流程](#-完整部署流程)。
 
@@ -218,7 +218,7 @@ curl "http://localhost:5000/api/kpi?year=2025"
 cd backend && python -m pytest ../tests/ -v
 ```
 
-浏览器访问 **http://localhost:8080**，应看到全球气象站地图。
+浏览器访问 http://localhost:8080 ，应看到全球气象站地图。
 
 ### 故障排除
 
