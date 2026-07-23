@@ -318,11 +318,14 @@ def load_to_mysql(csv_path: Path, year: int):
     cur.execute("DELETE FROM ads_stations WHERE data_year=%s", (year,))
     cur.execute("""SELECT station_id,MAX(station_name),ROUND(AVG(latitude),4),ROUND(AVG(longitude),4),
         MAX(climate_zone),ROUND(AVG(avg_temp),1),ROUND(SUM(total_precip),1),
-        SUM(heat_wave_days+cold_wave_days+extreme_days)
+        SUM(heat_wave_days+cold_wave_days+extreme_days),
+        SUM(heat_wave_days),SUM(cold_wave_days),SUM(extreme_days),
+        SUM(frost_days),SUM(snow_days),SUM(thunder_days)
         FROM dws_station_monthly WHERE year=%s GROUP BY station_id""", (year,))
     for row in cur.fetchall():
-        cur.execute("INSERT INTO ads_stations VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)",
-                    (year, row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]))
+        cur.execute("INSERT INTO ads_stations VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+                    (year, row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7],
+                     row[8], row[9], row[10], row[11], row[12], row[13]))
 
     db.commit()
     db.close()

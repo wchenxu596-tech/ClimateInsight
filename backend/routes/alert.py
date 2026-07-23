@@ -20,18 +20,17 @@ def api_alert_risk():
     limit = min(request.args.get("limit", 100, type=int), 500)
 
     rows = list(query_dict("""
-        SELECT station_id, station_name, latitude, longitude, climate_zone,
-               SUM(heat_wave_days)  AS heat_wave,
-               SUM(cold_wave_days)  AS cold_wave,
-               SUM(extreme_days)    AS extreme,
-               SUM(frost_days)      AS frost,
-               SUM(snow_days)       AS snow,
-               SUM(thunder_days)    AS thunder,
-               ROUND(AVG(avg_temp), 1)   AS avg_temp,
-               ROUND(SUM(total_precip), 1) AS total_precip
-        FROM dws_station_monthly
-        WHERE year = %s
-        GROUP BY station_id, station_name, latitude, longitude, climate_zone
+        SELECT station_id, station_name, lat AS latitude, lon AS longitude, climate_zone,
+               heat_wave_days  AS heat_wave,
+               cold_wave_days  AS cold_wave,
+               extreme_days    AS extreme,
+               frost_days      AS frost,
+               snow_days       AS snow,
+               thunder_days    AS thunder,
+               avg_temp,
+               total_precip
+        FROM ads_stations
+        WHERE data_year = %s
     """, (y,)))
 
     # 计算风险分

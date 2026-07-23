@@ -19,7 +19,7 @@ import AlertDashboard from '../views/AlertDashboard.vue'
 
 const activePage = inject('activePage')
 const homeRoot = ref(null)
-const scrollTarget = ref(null) // 导航点击目标，精确追踪避免中途 snap 干扰
+const scrollTarget = ref(null)
 
 const sections = [
   { id: 'map', comp: StationMap },

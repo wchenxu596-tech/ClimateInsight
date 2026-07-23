@@ -326,6 +326,7 @@ def _handle_extremes(data, result, year):
 
     lines = [f"⚠️ 极端天气事件趋势分析\n"]
     zone_extremes = {}
+    zone_latest = {}  # 最新年的各气候带极端事件总量
     for y in sorted(zones_data.keys()):
         for r in zones_data[y]:
             zone = ZONE_CN.get(r.get("climate_zone",""), r.get("climate_zone",""))
@@ -333,18 +334,29 @@ def _handle_extremes(data, result, year):
             if zone not in zone_extremes:
                 zone_extremes[zone] = []
             zone_extremes[zone].append((y, total))
+            if y == max(zones_data.keys()):
+                zone_latest[zone] = total
 
+    # 当前年极端事件最多的气候带
+    if zone_latest:
+        most_zone = max(zone_latest, key=zone_latest.get)
+        lines.append(f"🔥 当前极端事件最多的气候带：{most_zone}（{zone_latest[most_zone]:.0f} 天次）\n")
+        sorted_zones = sorted(zone_latest.items(), key=lambda x: x[1], reverse=True)
+        for z, t in sorted_zones:
+            lines.append(f"• {z}：{t:.0f} 天次（极端 {_safe(next((r.get('extreme_days') for r in zones_data[max(zones_data.keys())] if ZONE_CN.get(r.get('climate_zone',''),'')==z), 0)):.0f} + 热浪 {_safe(next((r.get('heat_wave_days') for r in zones_data[max(zones_data.keys())] if ZONE_CN.get(r.get('climate_zone',''),'')==z), 0)):.0f} + 寒潮 {_safe(next((r.get('cold_wave_days') for r in zones_data[max(zones_data.keys())] if ZONE_CN.get(r.get('climate_zone',''),'')==z), 0)):.0f}）")
+
+    lines.append(f"\n📈 多年变化趋势：")
     for zone, vals in sorted(zone_extremes.items()):
         if len(vals) >= 2:
             first, last = vals[0], vals[-1]
             diff = last[1] - first[1]
             trend = "增加" if diff > 0 else "减少"
-            lines.append(f"• {zone}：极端事件从 {first[1]:.0f} 天次 → {last[1]:.0f} 天次（{trend} {abs(diff):.0f}）")
+            lines.append(f"• {zone}：{first[0]}年 {first[1]:.0f} → {last[0]}年 {last[1]:.0f} 天次（{trend} {abs(diff):.0f}）")
 
     total_change = sum(v[-1][1]-v[0][1] for v in zone_extremes.values() if len(v) >= 2)
     if total_change > 0:
         lines.append(f"\n⚠️ 总体极端事件呈增加趋势（+{total_change:.0f} 天次），与全球气候变暖背景一致。")
-    lines.append("\n极端高温事件主要集中在热带和温带地区，寒潮事件以寒带和大陆性气候带为主。")
+    lines.append("极端高温事件主要集中在热带和温带地区，寒潮事件以寒带和大陆性气候带为主。")
 
     data["answer"] = "\n".join(lines)
 
@@ -479,7 +491,46 @@ def _handle_page_analysis(data, result, year, info):
                 lines.append(f"• {st}：{r.get('value','')} {('°C' if cat_key in ('hottest','coldest') else 'mm' if cat_key=='rainiest' else '天')}")
 
     lines.append(f"\n💡 可继续提问：「{years_ctx[0]}和{years_ctx[-1]}哪个更热？」「极端事件变化趋势？」「最热的站点？」")
+
+    # ── 预警页专属：极端事件评估 ──
+    if page in ("预警", "alert"):
+        _append_alert_assessment(lines, result, year, years_ctx)
+
     data["answer"] = "\n".join(lines)
+
+
+def _append_alert_assessment(lines, result, year, years_ctx):
+    """为预警页添加极端事件评估分析"""
+    zones_trend = result.get("zones_trend", {})
+    extremes_ranking = result.get("extremes_ranking", [])
+    if not zones_trend and not extremes_ranking:
+        return
+
+    lines.append(f"\n⚠️ 预警评估（{year} 年）")
+
+    # 气候带极端事件统计
+    if isinstance(zones_trend, dict):
+        latest_year = max(zones_trend.keys()) if zones_trend else year
+        zone_risks = []
+        for r in zones_trend.get(latest_year, []):
+            zone = ZONE_CN.get(r.get("climate_zone",""), r.get("climate_zone",""))
+            total = _safe(r.get("extreme_days",0)) + _safe(r.get("heat_wave_days",0)) + _safe(r.get("cold_wave_days",0))
+            if total > 0:
+                zone_risks.append((zone, total, _safe(r.get("extreme_days",0)), _safe(r.get("heat_wave_days",0)), _safe(r.get("cold_wave_days",0))))
+        zone_risks.sort(key=lambda x: x[1], reverse=True)
+
+        if zone_risks:
+            lines.append("各气候带风险等级：")
+            for z, total, ex, hw, cw in zone_risks:
+                level = "🔴 高" if total > 80000 else "🟠 中" if total > 40000 else "🟡 低"
+                lines.append(f"  {level} {z}：极端{ex:.0f} + 热浪{hw:.0f} + 寒潮{cw:.0f} = {total:.0f} 天次")
+
+    # 极端站点排名
+    if isinstance(extremes_ranking, list) and extremes_ranking:
+        lines.append(f"\n⚠️ 极端事件最多站点 TOP{min(5, len(extremes_ranking))}")
+        for r in extremes_ranking[:5]:
+            st = _cn_station(r.get("station_name",""))
+            lines.append(f"  • {st}：{r.get('value','')} 天")
 
 def _handle_chat(data):
     data["answer"] = (

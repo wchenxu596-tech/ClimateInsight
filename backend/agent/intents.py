@@ -132,7 +132,7 @@ def detect_rules(question: str) -> dict:
         return {"intent": "chat"}
 
     # ── 帮助 ──
-    if any(w in q for w in ["帮助", "能做什么", "怎么用", "功能", "怎么看", "在哪里看", "怎么查", "教我怎么", "指导", "在哪", "哪里"]):
+    if any(w in q for w in ["帮助", "能做什么", "怎么用", "功能", "怎么看", "在哪里看", "怎么查", "教我怎么", "指导", "在哪"]):
         return {"intent": "help"}
 
     # 构建带年份的返回（仅当用户明确提到年份时）
@@ -143,23 +143,21 @@ def detect_rules(question: str) -> dict:
         return result
 
     # ── 页面分析 ──
-    if any(w in q for w in ["分析当前页面", "当前页", "这个页面", "这个图表", "解读一下", "帮我分析当前"]):
+    if any(w in q for w in ["分析当前页面", "当前页", "这个页面", "这个图表", "解读一下", "帮我分析当前", "评估"]):
         return _r("page_analysis")
-
-    # ── 多年趋势 ──
-    if any(w in q for w in ["变暖趋势", "多年变", "这些年", "长期趋势", "温度走势", "升温趋势", "温度上升了", "变暖了多少"]):
-        return _r("trend_analysis", years=[2015, 2025])
 
     # ── 季节分析 ──
     if any(w in q for w in ["季节", "春夏秋冬", "四季", "哪个季节"]):
         return _r("seasonal")
 
-    # ── 气候带趋势 ──
+    # ── 气候带趋势（具体）──
     if any(w in q for w in ["气候带温度", "气候带变化", "热带温度", "温带温度", "哪个气候带升温"]):
         return _r("zone_detail")
 
-    # ── 极端事件趋势 ──
-    if any(w in q for w in ["极端事件变化", "热浪增加", "极端天气趋势", "寒潮变化", "极端事件增多", "极端事件增加", "极端事件趋势"]):
+    # ── 极端事件趋势 / 异常检测 ──
+    if any(w in q for w in ["极端事件变化", "热浪增加", "极端天气趋势", "寒潮变化",
+                             "极端事件增多", "极端事件增加", "极端事件趋势",
+                             "极端事件最多", "异常检测", "温度异常", "极端事件"]):
         return _r("extremes")
 
     # ── 站点查询 ──
@@ -193,9 +191,10 @@ def detect_rules(question: str) -> dict:
     # ── 排名 — 极端 ──
     if any(w in q for w in ["极端站点", "极端天气站点", "恶劣天气", "极端天气最多", "糟糕天气"]):
         return _r("ranking", category="most_extreme", limit=_extract_limit(q))
-    # 极端事件趋势（不含具体站点查询）
-    if any(w in q for w in ["极端天气变化", "极端天气趋势"]):
-        return _r("extremes")
+
+    # ── 多年趋势（放在具体意图之后，作为温度变化的兜底）──
+    if any(w in q for w in ["变暖趋势", "多年变", "这些年", "长期趋势", "温度走势", "升温趋势", "温度上升了", "变暖了多少", "温度趋势", "温度变化"]):
+        return _r("trend_analysis", years=[2015, 2025])
 
     # ── 气候带 ──
     if any(w in q for w in ["气候带", "热带", "温带", "寒带", "分布", "气候类型"]):
